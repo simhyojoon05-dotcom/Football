@@ -71,3 +71,41 @@ buttons.forEach(function (btn) {
 });
 
 applyFilter();
+var chatLog = document.getElementById("chatLog");
+var chatInput = document.getElementById("chatInput");
+var chatBtn = document.getElementById("chatBtn");
+
+function addMsg(text, who) {
+  var div = document.createElement("div");
+  div.className = "msg " + who;
+  div.textContent = text;
+  chatLog.appendChild(div);
+  return div;
+}
+
+async function sendChat() {
+  var q = chatInput.value.trim();
+  if (!q) return;
+  addMsg(q, "me");
+  chatInput.value = "";
+  chatBtn.disabled = true;
+  var waiting = addMsg("생각 중...", "ai");
+
+  try {
+    var res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: q })
+    });
+    var data = await res.json();
+    waiting.textContent = data.reply || data.error || "답변을 받지 못했어요.";
+  } catch (e) {
+    waiting.textContent = "연결에 실패했어요. 잠시 후 다시 시도해 주세요.";
+  }
+  chatBtn.disabled = false;
+}
+
+chatBtn.addEventListener("click", sendChat);
+chatInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") sendChat();
+});
