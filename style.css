@@ -1,0 +1,36 @@
+:root{
+  --bg:#f3f5f0; --card:#ffffff; --ink:#14213d; --sub:#5b6577; --line:#d9ded3;
+  --accent:#1f5f3a; --accent-ink:#ffffff; --chip:#e6ece1; --ai:#eef3fb; --ai-line:#b9c9e6;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#16211a; --card:#1e2b22; --ink:#eef2ea; --sub:#a4b1a4; --line:#32443a;
+    --accent:#6fcf97; --accent-ink:#10231a; --chip:#2a3a30; --ai:#1c2838; --ai-line:#3a4f6e;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;margin:0 0 4px}
+.lead{color:var(--sub);margin:0 0 20px}
+
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;padding:12px 14px;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.search button{padding:12px 18px;font-size:1rem;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer}
+.search input:focus,.search button:focus-visible,.filter-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
+.filter-btn{padding:8px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:.95rem;cursor:pointer}
+.filter-btn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+
+#resultCount{color:var(--sub);font-size:.9rem;margin:6px 0 12px}
+#cardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+
+.player-card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.player-name{font-size:1.15rem;font-weight:800}
+.position-badge{background:var(--chip);border-radius:6px;padding:2px 9px;font-weight:700;font-size:.85rem}
+.player-detail{font-size:.93rem;color:var(--sub);margin:3px 0}
+.ai-summary{margin-top:12px;padding:10px 12px;background:var(--ai);border:1px solid var(--ai-line);border-radius:10px;font-size:.93rem}
+.ai-summary strong{display:block;margin-bottom:3px}
+.empty{grid-column:1/-1;text-align:center;color:var(--sub);padding:30px}

@@ -1,0 +1,73 @@
+// 나이는 출생연도로 자동 계산돼요
+var THIS_YEAR = new Date().getFullYear();
+
+var players = [
+  {name:"티모 베르너", nationality:"독일 🇩🇪", team:"토트넘 홋스퍼", position:"FW", birthYear:1996, mainFoot:"오른발",
+   aiSummary:"압도적인 침투 스피드를 갖춘 포워드. 공수 전환 시 직선적인 위협 창출 능력이 뛰어남."},
+  {name:"손흥민", nationality:"대한민국 🇰🇷", team:"토트넘 홋스퍼", position:"FW", birthYear:1992, mainFoot:"양발",
+   aiSummary:"양발 가리지 않는 세계 최고 수준의 감아차기 골 결정력과 클러치 능력을 보유한 캡틴."},
+  {name:"위르겐 클린스만", nationality:"독일 🇩🇪", team:"토트넘 홋스퍼 (전 소속)", position:"FW", birthYear:1964, mainFoot:"오른발",
+   aiSummary:"박스 안에서의 감각적인 위기 포착 능력과 헤더가 일품이었던 레전드 스트라이커."},
+  {name:"루이스 홀트비", nationality:"독일 🇩🇪", team:"토트넘 홋스퍼 (전 소속)", position:"MF", birthYear:1990, mainFoot:"왼발",
+   aiSummary:"왕성한 활동량과 창의적인 공간 패스 공급 능력을 선보였던 공격형 미드필더."},
+  {name:"제임스 매디슨", nationality:"잉글랜드 🏴󠁧󠁢󠁥󠁮󠁧󠁿", team:"토트넘 홋스퍼", position:"MF", birthYear:1996, mainFoot:"오른발",
+   aiSummary:"경기 흐름을 읽는 킬패스 능력과 전담 세트피스 키커로서의 정교함을 갖춘 플레이메이커."},
+  {name:"크리스티안 로메로", nationality:"아르헨티나 🇦🇷", team:"토트넘 홋스퍼", position:"DF", birthYear:1998, mainFoot:"오른발",
+   aiSummary:"전진 대치 타이밍이 빠른 공격적 센터백. 강인한 피지컬과 깔끔한 대인 수비가 강점."}
+];
+
+var currentFilter = "ALL";
+
+function drawCards(list) {
+  var grid = document.getElementById("cardGrid");
+  var count = document.getElementById("resultCount");
+  grid.innerHTML = "";
+  count.textContent = "총 " + list.length + "명";
+
+  if (list.length === 0) {
+    grid.innerHTML = '<p class="empty">검색 결과가 없어요. 다른 단어로 찾아보세요.</p>';
+    return;
+  }
+
+  list.forEach(function (p) {
+    var age = THIS_YEAR - p.birthYear;
+    var card = document.createElement("div");
+    card.className = "player-card";
+    card.innerHTML =
+      '<div class="card-top"><span class="player-name">' + p.name + '</span>' +
+      '<span class="position-badge">' + p.position + '</span></div>' +
+      '<div class="player-detail">📍 국적: ' + p.nationality + '</div>' +
+      '<div class="player-detail">🛡️ 소속: ' + p.team + '</div>' +
+      '<div class="player-detail">🎂 나이: 약 ' + age + '세 | 주발: ' + p.mainFoot + '</div>' +
+      '<div class="ai-summary"><strong>🤖 AI 플레이 스타일 요약</strong>' + p.aiSummary + '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function applyFilter() {
+  var q = document.getElementById("searchInput").value.trim().toLowerCase();
+  var result = players.filter(function (p) {
+    var okPos = currentFilter === "ALL" || p.position === currentFilter;
+    var text = (p.name + " " + p.nationality + " " + p.team + " " + p.position + " " + p.aiSummary).toLowerCase();
+    return okPos && (q === "" || text.indexOf(q) !== -1);
+  });
+  drawCards(result);
+}
+
+document.getElementById("searchBtn").addEventListener("click", applyFilter);
+document.getElementById("searchInput").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") applyFilter();
+});
+document.getElementById("searchInput").addEventListener("input", applyFilter);
+
+var buttons = document.querySelectorAll(".filter-btn");
+buttons.forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    buttons.forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    currentFilter = btn.getAttribute("data-filter");
+    applyFilter();
+  });
+});
+
+applyFilter();

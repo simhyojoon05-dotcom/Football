@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 축구 비서</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>AI 축구 비서</h1>
+  <p class="lead">선수 이름, 팀, 국적, 플레이 스타일로 검색해 보세요.</p>
+
+  <div class="search">
+    <input id="searchInput" type="text" placeholder="예: 손흥민, 토트넘, 헤더, 독일">
+    <button id="searchBtn" type="button">검색</button>
+  </div>
+
+  <div class="filters">
+    <button type="button" class="filter-btn active" data-filter="ALL">전체</button>
+    <button type="button" class="filter-btn" data-filter="FW">공격수</button>
+    <button type="button" class="filter-btn" data-filter="MF">미드필더</button>
+    <button type="button" class="filter-btn" data-filter="DF">수비수</button>
+  </div>
+
+  <div id="resultCount"></div>
+  <div id="cardGrid"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
