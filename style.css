@@ -34,3 +34,8 @@ h1{font-size:1.7rem;margin:0 0 4px}
 .ai-summary{margin-top:12px;padding:10px 12px;background:var(--ai);border:1px solid var(--ai-line);border-radius:10px;font-size:.93rem}
 .ai-summary strong{display:block;margin-bottom:3px}
 .empty{grid-column:1/-1;text-align:center;color:var(--sub);padding:30px}
+.chat{margin:18px 0 10px}
+.chat-log{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.msg{padding:10px 12px;border-radius:12px;max-width:90%;white-space:pre-wrap}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
+.msg.ai{align-self:flex-start;background:var(--ai);border:1px solid var(--ai-line)}
