@@ -16,13 +16,11 @@
     <button id="searchBtn" type="button">검색</button>
   </div>
 
-  <div class="filters">
-    <button type="button" class="filter-btn active" data-filter="ALL">전체</button>
-    <button type="button" class="filter-btn" data-filter="FW">공격수</button>
-    <button type="button" class="filter-btn" data-filter="MF">미드필더</button>
-    <button type="button" class="filter-btn" data-filter="DF">수비수</button>
-  </div>
-
+   <div class="chat">
+    <div id="chatLog" class="chat-log"></div>
+    <div class="search">
+      <input id="chatInput" type="text" placeholder="AI에게 물어보기 (예: 손흥민 같은 선수 추천해줘)">
+      <button id="chatBtn" type="button">질문</button>
   <div id="resultCount"></div>
   <div id="cardGrid"></div>
 </div>
