@@ -1,5 +1,5 @@
 // 모델 이름이 오류나면 AI Studio에서 무료로 표시된 Flash-Lite 모델 이름으로 바꿔요
-var MODEL = "gemini-2.5-flash-lite";
+var MODEL = "Default Gemini Project";
 
 module.exports = async function (req, res) {
   if (req.method !== "POST") {
