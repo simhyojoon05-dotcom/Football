@@ -109,3 +109,19 @@ chatBtn.addEventListener("click", sendChat);
 chatInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter") sendChat();
 });
+// 새 메시지가 오면 대화창을 맨 아래로 내려요
+var stageEl = document.querySelector(".stage");
+new MutationObserver(function () {
+  stageEl.scrollTop = stageEl.scrollHeight;
+}).observe(document.getElementById("chatLog"), { childList: true, characterData: true, subtree: true });
+
+// 아이폰 키보드가 올라와도 화면 높이를 맞춰요
+if (window.visualViewport) {
+  var fitViewport = function () {
+    document.documentElement.style.setProperty("--vh", window.visualViewport.height + "px");
+    window.scrollTo(0, 0);
+  };
+  window.visualViewport.addEventListener("resize", fitViewport);
+  window.visualViewport.addEventListener("scroll", fitViewport);
+  fitViewport();
+}
