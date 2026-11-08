@@ -1,4 +1,3 @@
-// 모델 이름이 오류나면 AI Studio에서 무료로 표시된 Flash-Lite 모델 이름으로 바꿔요
 var MODEL = "Fotmini";
 
 module.exports = async function (req, res) {
@@ -6,10 +5,15 @@ module.exports = async function (req, res) {
     return res.status(405).json({ error: "POST만 가능해요." });
   }
 
-  var message = (req.body && req.body.message) || "";
-  message = String(message).slice(0, 500);
+  var message = String((req.body && req.body.message) || "").slice(0, 500);
   if (!message.trim()) {
     return res.status(400).json({ error: "질문을 입력해 주세요." });
+  }
+
+  // 키 앞뒤 공백·따옴표를 자동으로 제거해요
+  var key = (process.env.GEMINI_API_KEY || "").trim().replace(/^["']|["']$/g, "");
+  if (!key) {
+    return res.status(500).json({ error: "서버에 GEMINI_API_KEY가 없어요. Vercel 설정과 Redeploy를 확인하세요." });
   }
 
   try {
@@ -18,7 +22,7 @@ module.exports = async function (req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": process.env.GEMINI_API_KEY
+        "x-goog-api-key": key
       },
       body: JSON.stringify({
         systemInstruction: {
@@ -34,9 +38,11 @@ module.exports = async function (req, res) {
     if (r.status === 429) {
       return res.status(429).json({ error: "지금 요청이 많아요. 잠시 후 다시 시도해 주세요." });
     }
-        if (!r.ok) {
+    if (!r.ok) {
       var detail = (data && data.error && data.error.message) || "알 수 없는 오류";
-      return res.status(500).json({ error: "AI 호출 실패: " + detail });
+      return res.status(500).json({
+        error: "AI 호출 실패: " + detail + " [키 길이:" + key.length + ", 앞4글자:" + key.slice(0, 4) + "]"
+      });
     }
 
     var parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
