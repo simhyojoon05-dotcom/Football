@@ -1,4 +1,4 @@
-var MODEL = "gemini-2.5-flash-lite";
+var MODEL = "gemini-3.5-flash-lite";
 
 module.exports = async function (req, res) {
   if (req.method !== "POST") {
