@@ -12,9 +12,16 @@ module.exports = async function (req, res) {
 
   // 키 앞뒤 공백·따옴표를 자동으로 제거해요
   var key = (process.env.GEMINI_API_KEY || "").trim().replace(/^["']|["']$/g, "");
-  if (!key) {
-    return res.status(500).json({ error: "서버에 GEMINI_API_KEY가 없어요. Vercel 설정과 Redeploy를 확인하세요." });
+    if (!key) {
+    var names = Object.keys(process.env).filter(function (n) {
+      return /GEM|KEY|API|FOT/i.test(n);
+    });
+    return res.status(500).json({
+      error: "서버에 GEMINI_API_KEY가 없어요. [배포 환경: " + (process.env.VERCEL_ENV || "알 수 없음") +
+        "] [비슷한 이름의 변수: " + (names.length ? names.join(", ") : "없음") + "]"
+    });
   }
+
 
   try {
     var url = "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent";
