@@ -126,3 +126,6 @@ body.chatting .composer{background:var(--bg);padding-top:.8rem}
 body.chatting .stage{padding-top:7rem}
 .chat-log{margin:0 auto}
 
+/* 대화를 시작해도 위쪽 로고와 추천 질문을 그대로 보여줘요 (조금 작게) */
+body.chatting .hero{display:block;margin:0 auto 2.5rem;zoom:.5}
+body.chatting .stage{justify-content:flex-start;padding-top:6rem}
