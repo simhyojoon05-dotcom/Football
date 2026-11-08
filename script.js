@@ -1,4 +1,4 @@
-// 나이는 출생연도로 자동 계산돼요
+// ===== 선수 데이터 (나이는 출생연도로 자동 계산) =====
 var THIS_YEAR = new Date().getFullYear();
 
 var players = [
@@ -18,6 +18,7 @@ var players = [
 
 var currentFilter = "ALL";
 
+// ===== 선수 도감 =====
 function drawCards(list) {
   var grid = document.getElementById("cardGrid");
   var count = document.getElementById("resultCount");
@@ -55,15 +56,15 @@ function applyFilter() {
 }
 
 document.getElementById("searchBtn").addEventListener("click", applyFilter);
+document.getElementById("searchInput").addEventListener("input", applyFilter);
 document.getElementById("searchInput").addEventListener("keydown", function (e) {
   if (e.key === "Enter") applyFilter();
 });
-document.getElementById("searchInput").addEventListener("input", applyFilter);
 
-var buttons = document.querySelectorAll(".filter-btn");
-buttons.forEach(function (btn) {
+var filterBtns = document.querySelectorAll(".filter-btn");
+filterBtns.forEach(function (btn) {
   btn.addEventListener("click", function () {
-    buttons.forEach(function (b) { b.classList.remove("active"); });
+    filterBtns.forEach(function (b) { b.classList.remove("active"); });
     btn.classList.add("active");
     currentFilter = btn.getAttribute("data-filter");
     applyFilter();
@@ -71,6 +72,31 @@ buttons.forEach(function (btn) {
 });
 
 applyFilter();
+
+// ===== 메뉴 / 도감 열고 닫기 =====
+var drawer = document.getElementById("drawer");
+var overlay = document.getElementById("overlay");
+var dex = document.getElementById("dex");
+
+function openDrawer() { drawer.hidden = false; overlay.hidden = false; }
+function closeDrawer() { drawer.hidden = true; overlay.hidden = true; }
+
+document.getElementById("menuBtn").addEventListener("click", openDrawer);
+overlay.addEventListener("click", closeDrawer);
+document.getElementById("drawerDex").addEventListener("click", function () {
+  closeDrawer();
+  dex.hidden = false;
+});
+document.getElementById("dexClose").addEventListener("click", function () { dex.hidden = true; });
+document.getElementById("drawerNew").addEventListener("click", function () {
+  closeDrawer();
+  newChat();
+});
+document.getElementById("loginBtn").addEventListener("click", function () {
+  alert("로그인 기능은 준비 중이에요.");
+});
+
+// ===== AI 채팅 =====
 var chatLog = document.getElementById("chatLog");
 var chatInput = document.getElementById("chatInput");
 var chatBtn = document.getElementById("chatBtn");
@@ -80,35 +106,66 @@ function addMsg(text, who) {
   div.className = "msg " + who;
   div.textContent = text;
   chatLog.appendChild(div);
+  window.scrollTo(0, document.body.scrollHeight);
   return div;
 }
 
-async function sendChat() {
-  var q = chatInput.value.trim();
+// 지난 대화를 기억해서 서버로 같이 보내요
+var chatHistory = [];
+
+function newChat() {
+  chatLog.innerHTML = "";
+  chatHistory = [];
+  document.body.classList.remove("chatting");
+  chatInput.value = "";
+}
+
+async function sendChat(text) {
+  var q = (text || chatInput.value).trim();
   if (!q) return;
+  document.body.classList.add("chatting");
   addMsg(q, "me");
   chatInput.value = "";
   chatBtn.disabled = true;
   var waiting = addMsg("생각 중...", "ai");
 
+  chatHistory.push({ role: "user", text: q });
+
   try {
     var res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: q })
+      body: JSON.stringify({ messages: chatHistory })
     });
     var data = await res.json();
-    waiting.textContent = data.reply || data.error || "답변을 받지 못했어요.";
+
+    if (data.reply) {
+      waiting.textContent = data.reply;
+      chatHistory.push({ role: "model", text: data.reply });
+    } else {
+      waiting.textContent = data.error || "답변을 받지 못했어요.";
+      chatHistory.pop(); // 실패한 질문은 기억에서 빼요
+    }
   } catch (e) {
     waiting.textContent = "연결에 실패했어요. 잠시 후 다시 시도해 주세요.";
+    chatHistory.pop();
   }
   chatBtn.disabled = false;
 }
 
-chatBtn.addEventListener("click", sendChat);
+chatBtn.addEventListener("click", function () { sendChat(); });
 chatInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter") sendChat();
 });
+document.getElementById("newBtn").addEventListener("click", newChat);
+
+document.querySelectorAll(".chip").forEach(function (chip) {
+  chip.addEventListener("click", function () {
+    sendChat(chip.getAttribute("data-q"));
+  });
+});
+
+// ===== 화면 고정 (대화창만 스크롤) =====
 // 새 메시지가 오면 대화창을 맨 아래로 내려요
 var stageEl = document.querySelector(".stage");
 new MutationObserver(function () {
