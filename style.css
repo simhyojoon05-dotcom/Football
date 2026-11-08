@@ -114,3 +114,15 @@ body.chatting .composer{background:linear-gradient(to top,var(--bg) 60%,transpar
   .bar{height:4.8rem}
   .send{width:3.8rem;height:3.8rem}
 }
+/* 대화창은 안에서 스크롤, 입력창은 맨 아래 고정 */
+html,body{height:var(--vh,100dvh);overflow:hidden;overscroll-behavior:none}
+body{position:fixed;top:0;left:0;right:0;display:flex;flex-direction:column}
+.topbar{position:absolute}
+.stage{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  justify-content:flex-start;padding:6rem 1rem 1rem}
+.hero{margin:auto}
+.composer{position:static;flex:none;background:var(--bg)}
+body.chatting .composer{background:var(--bg);padding-top:.8rem}
+body.chatting .stage{padding-top:7rem}
+.chat-log{margin:0 auto}
+
