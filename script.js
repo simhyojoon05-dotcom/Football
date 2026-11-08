@@ -96,6 +96,89 @@ document.getElementById("loginBtn").addEventListener("click", function () {
   alert("로그인 기능은 준비 중이에요.");
 });
 
+// ===== AI 답변을 보기 좋게 바꾸는 함수 (마크다운 → 화면용) =====
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function inlineMd(s) {
+  return escapeHtml(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
+function tableCells(row) {
+  return row.replace(/^\|/, "").replace(/\|$/, "").split("|").map(function (c) { return c.trim(); });
+}
+
+var TABLE_SEP = /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+
+function isBlockStart(t) {
+  return /^#{1,4}\s+/.test(t) || /^([-*•])\s+/.test(t) || /^\d+[.)]\s+/.test(t) || t.charAt(0) === "|";
+}
+
+function renderMarkdown(text) {
+  var lines = String(text).replace(/\r/g, "").split("\n");
+  var html = "";
+  var i = 0;
+
+  while (i < lines.length) {
+    var t = lines[i].trim();
+    if (!t) { i++; continue; }
+
+    // 표
+    if (t.charAt(0) === "|" && i + 1 < lines.length && TABLE_SEP.test(lines[i + 1]) && lines[i + 1].indexOf("-") !== -1) {
+      var rows = [];
+      while (i < lines.length && lines[i].trim().charAt(0) === "|") { rows.push(lines[i].trim()); i++; }
+      var head = tableCells(rows[0]);
+      html += '<div class="md-table"><table><thead><tr>' +
+        head.map(function (c) { return "<th>" + inlineMd(c) + "</th>"; }).join("") +
+        "</tr></thead><tbody>";
+      rows.slice(2).forEach(function (r) {
+        html += "<tr>" + tableCells(r).map(function (c) { return "<td>" + inlineMd(c) + "</td>"; }).join("") + "</tr>";
+      });
+      html += "</tbody></table></div>";
+      continue;
+    }
+
+    // 제목
+    var h = t.match(/^#{1,4}\s+(.*)$/);
+    if (h) { html += '<p class="md-h">' + inlineMd(h[1]) + "</p>"; i++; continue; }
+
+    // 글머리 목록
+    if (/^([-*•])\s+/.test(t)) {
+      html += "<ul>";
+      while (i < lines.length && /^([-*•])\s+/.test(lines[i].trim())) {
+        html += "<li>" + inlineMd(lines[i].trim().replace(/^([-*•])\s+/, "")) + "</li>";
+        i++;
+      }
+      html += "</ul>";
+      continue;
+    }
+
+    // 번호 목록
+    if (/^\d+[.)]\s+/.test(t)) {
+      html += "<ol>";
+      while (i < lines.length && /^\d+[.)]\s+/.test(lines[i].trim())) {
+        html += "<li>" + inlineMd(lines[i].trim().replace(/^\d+[.)]\s+/, "")) + "</li>";
+        i++;
+      }
+      html += "</ol>";
+      continue;
+    }
+
+    // 일반 문단
+    var para = [t];
+    i++;
+    while (i < lines.length && lines[i].trim() && !isBlockStart(lines[i].trim())) {
+      para.push(lines[i].trim());
+      i++;
+    }
+    html += "<p>" + para.map(inlineMd).join("<br>") + "</p>";
+  }
+  return html;
+}
+
 // ===== AI 채팅 =====
 var chatLog = document.getElementById("chatLog");
 var chatInput = document.getElementById("chatInput");
@@ -140,7 +223,8 @@ async function sendChat(text) {
     var data = await res.json();
 
     if (data.reply) {
-      waiting.textContent = data.reply;
+      waiting.innerHTML = renderMarkdown(data.reply);
+      waiting.classList.add("md");
       chatHistory.push({ role: "model", text: data.reply });
     } else {
       waiting.textContent = data.error || "답변을 받지 못했어요.";
