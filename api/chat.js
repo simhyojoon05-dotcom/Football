@@ -1,6 +1,6 @@
 var MODEL = "gemini-3.5-flash-lite";
 
-var BASE_SYSTEM = "너는 축구 전문 AI 비서야. 한국어로 친근하고 간결하게 답해. 선수, 전술, 팀에 대한 질문에 답해. 앞선 대화 내용을 기억하고 이어서 답해. 너의 기본 지식은 오래됐을 수 있어서 최신 정보는 모를 수 있어. 아래에 '참고 데이터'가 있으면 그 내용을 우선해서 답하고, 영어 내용은 한국어로 풀어서 설명해. 참고 데이터에 없는 최신 정보는 아는 척하지 말고 모른다고 솔직하게 말해.";
+var BASE_SYSTEM = "너는 축구 전문 AI 비서야. 한국어로 친근하고 간결하게 답해. 선수, 전술, 팀에 대한 질문에 답해. 앞선 대화 내용을 기억하고 이어서 답해. 너의 기본 지식은 오래됐을 수 있어서 최신 정보는 모를 수 있어. 아래에 '참고 데이터'가 있으면 그 내용을 우선해서 답하고, 영어 내용은 한국어로 풀어서 설명해. 선수 이름은 영어 표기와 한국어 표기를 서로 맞춰서 찾아줘. 참고 데이터에 없는 최신 정보나 선수 기록은 아는 척하지 말고, 확인할 수 없다고 솔직하게 말해.";
 
 // 무료 구간에서 쓸 수 있는 리그와, 질문에서 찾을 단어들
 var LEAGUES = [
@@ -14,6 +14,7 @@ var LEAGUES = [
 
 var NEWS_RE = /뉴스|소식|이슈|이적|부상|오늘|어제|최근|요즘|근황|화제/;
 var TABLE_RE = /순위|승점|득실|결과|스코어|경기|리그|우승|강등|1위|몇 위|몇위/;
+var PLAYER_RE = /득점|골|어시|도움|기록|전적|스탯|성적|폼|활약|페널티/;
 
 // 같은 데이터를 30분 동안 재사용해서 무료 호출 한도를 아껴요
 var cache = {};
@@ -60,7 +61,7 @@ async function getNews() {
   });
 }
 
-// A. 순위와 최근 결과 (football-data.org)
+// A-1. 순위와 최근 결과 (football-data.org)
 async function getLeague(lg, token) {
   return cached("lg:" + lg.code, async function () {
     var h = { "X-Auth-Token": token };
@@ -92,6 +93,22 @@ async function getLeague(lg, token) {
       }).join("\n");
     }
     return table || (mt && mt.matches && mt.matches.length) ? out : "";
+  });
+}
+
+// A-2. 리그별 득점 순위 = 선수 시즌 기록 (football-data.org)
+async function getScorers(lg, token) {
+  return cached("sc:" + lg.code, async function () {
+    var h = { "X-Auth-Token": token };
+    var r = await getFetch("https://api.football-data.org/v4/competitions/" + lg.code + "/scorers?limit=30", h);
+    var data = await r.json();
+    if (!data.scorers || !data.scorers.length) return "";
+    var year = data.season && data.season.startDate ? data.season.startDate.slice(0, 4) + " 시즌 " : "";
+    return "[" + lg.name + " " + year + "득점 순위 상위 30명 (시즌 누적 기록)]\n" +
+      data.scorers.map(function (s, i) {
+        return (i + 1) + ". " + s.player.name + " (" + s.team.name + ") 출전 " + (s.playedMatches || 0) +
+          "경기, 골 " + (s.goals || 0) + ", 도움 " + (s.assists || 0) + ", 페널티골 " + (s.penalties || 0);
+      }).join("\n");
   });
 }
 
@@ -129,17 +146,24 @@ module.exports = async function (req, res) {
   var extra = "";
   try {
     var jobs = [];
+    var fdKey = (process.env.FOOTBALL_DATA_KEY || "").trim();
+    var matched = LEAGUES.filter(function (lg) { return lg.re.test(recent); });
 
     if (NEWS_RE.test(recent)) {
       jobs.push(getNews().then(function (t) { return t ? "[최신 축구 뉴스 (BBC)]\n" + t : ""; }).catch(function () { return ""; }));
     }
 
-    var fdKey = (process.env.FOOTBALL_DATA_KEY || "").trim();
     if (fdKey && TABLE_RE.test(recent)) {
-      LEAGUES.forEach(function (lg) {
-        if (lg.re.test(recent)) {
-          jobs.push(getLeague(lg, fdKey).catch(function () { return ""; }));
-        }
+      matched.forEach(function (lg) {
+        jobs.push(getLeague(lg, fdKey).catch(function () { return ""; }));
+      });
+    }
+
+    // 선수 기록 질문이면 득점 순위를 가져와요 (리그를 말하지 않으면 6개 리그 모두)
+    if (fdKey && PLAYER_RE.test(recent)) {
+      var targets = matched.length ? matched : LEAGUES;
+      targets.forEach(function (lg) {
+        jobs.push(getScorers(lg, fdKey).catch(function () { return ""; }));
       });
     }
 
