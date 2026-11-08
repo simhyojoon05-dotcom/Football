@@ -48,7 +48,7 @@ module.exports = async function (req, res) {
     if (!r.ok) {
       var detail = (data && data.error && data.error.message) || "알 수 없는 오류";
       return res.status(500).json({
-        error: "AI 호출 실패: " + detail + " [키 길이:" + key.length + ", 앞4글자:" + key.slice(0, 4) + "]"
+        error: "AI 호출 실패: " + detail
       });
     }
 
