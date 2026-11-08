@@ -34,8 +34,9 @@ module.exports = async function (req, res) {
     if (r.status === 429) {
       return res.status(429).json({ error: "지금 요청이 많아요. 잠시 후 다시 시도해 주세요." });
     }
-    if (!r.ok) {
-      return res.status(500).json({ error: "AI 호출에 실패했어요." });
+        if (!r.ok) {
+      var detail = (data && data.error && data.error.message) || "알 수 없는 오류";
+      return res.status(500).json({ error: "AI 호출 실패: " + detail });
     }
 
     var parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
