@@ -1,41 +1,116 @@
 :root{
-  --bg:#f3f5f0; --card:#ffffff; --ink:#14213d; --sub:#5b6577; --line:#d9ded3;
-  --accent:#1f5f3a; --accent-ink:#ffffff; --chip:#e6ece1; --ai:#eef3fb; --ai-line:#b9c9e6;
+  --bg:#fdfdfd; --ink:#16171b; --sub:#76777d; --line:#e2e2e5;
+  --soft:#ededef; --chip:#f4f4f5; --ai:#f1f2f4; --card:#fff; --tag:#e8ecef;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#16211a; --card:#1e2b22; --ink:#eef2ea; --sub:#a4b1a4; --line:#32443a;
-    --accent:#6fcf97; --accent-ink:#10231a; --chip:#2a3a30; --ai:#1c2838; --ai-line:#3a4f6e;
-  }
-}
+/* 1rem = 시안 기준 16px. 화면 폭에 비례해 커지고 줄어요 */
+html{font-size:clamp(9px,1.0638vw,16px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.5}
-.wrap{max-width:900px;margin:0 auto;padding:24px 16px 48px}
-h1{font-size:1.7rem;margin:0 0 4px}
-.lead{color:var(--sub);margin:0 0 20px}
+[hidden]{display:none !important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.4}
+button{font-family:inherit;color:inherit}
+svg{display:block}
 
+/* 상단 버튼 */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top,0px) + 1.6rem) 1.9rem 0;pointer-events:none}
+.topbar>*{pointer-events:auto}
+.round{width:4.125rem;height:4.125rem;border-radius:50%;border:0;background:var(--soft);
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.round svg{width:1.65rem;height:1.65rem}
+.round.small{width:44px;height:44px;font-size:1.1rem}
+.pill{height:4.125rem;padding:0 2.25rem;border-radius:999px;border:0;background:var(--soft);
+  font-size:1.25rem;cursor:pointer}
+
+/* 메인 */
+.stage{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:6rem 1rem 12rem}
+.hero{width:66.8rem;max-width:100%;text-align:center}
+.logo{position:relative;display:inline-block;font-size:4.5rem;font-weight:800;
+  letter-spacing:-.04em;line-height:1;transform:translateX(-2.1rem)}
+.ball{position:absolute;left:calc(100% + .3rem);top:-2.1rem;width:5.95rem;height:5rem}
+h1{font-size:2.35rem;font-weight:500;margin:.8rem 0 0;letter-spacing:-.02em;line-height:1.2}
+.sub{font-size:2rem;font-weight:300;color:var(--sub);margin:1.3rem 0 0;letter-spacing:-.02em;line-height:1.3}
+.divider{display:flex;align-items:center;gap:1.3rem;width:63.4rem;max-width:100%;
+  margin:4rem auto .9rem;color:var(--sub);font-size:1.3rem}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem}
+.chip{display:flex;align-items:center;gap:1.05rem;height:4.25rem;padding:0 1.9rem;border-radius:999px;
+  border:1px solid var(--line);background:var(--chip);font-size:1.45rem;cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 14px rgba(0,0,0,.03)}
+.chip svg{width:2.1rem;height:2.1rem;flex:none}
+.chip:active{transform:scale(.98)}
+
+/* 입력창 */
+.composer{position:fixed;left:0;right:0;bottom:0;z-index:4;
+  padding:0 1rem calc(env(safe-area-inset-bottom,0px) + 5rem)}
+.bar{width:68rem;max-width:100%;height:5.75rem;margin:0 auto;display:flex;align-items:center;
+  padding:0 .9rem 0 2.1rem;border:1px solid var(--line);border-radius:999px;background:#fbfbfb;
+  box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.plus{width:2.2rem;height:2.2rem;border:0;background:transparent;padding:0;cursor:pointer;flex:none}
+.plus svg{width:100%;height:100%}
+.bar input{flex:1;min-width:0;margin:0 1rem;border:0;outline:0;background:transparent;color:var(--ink);font-size:1.5rem}
+.send{width:4.5rem;height:4.5rem;border:0;border-radius:50%;background:var(--soft);padding:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.send svg{width:2.1rem;height:2.1rem}
+.send:disabled{opacity:.4}
+
+/* 대화 시작 후 */
+body.chatting .hero{display:none}
+body.chatting .stage{justify-content:flex-start;padding-top:7rem}
+body.chatting .composer{background:linear-gradient(to top,var(--bg) 60%,transparent);padding-top:1.5rem}
+.chat-log{width:68rem;max-width:100%;display:flex;flex-direction:column;gap:1rem}
+.msg{padding:.8rem 1.2rem;border-radius:1.4rem;max-width:88%;white-space:pre-wrap;word-break:break-word;font-size:1.3rem}
+.msg.me{align-self:flex-end;background:var(--ink);color:#fff}
+.msg.ai{align-self:flex-start;background:var(--ai)}
+
+/* 메뉴 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:8}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:270px;z-index:9;background:var(--bg);
+  padding:calc(env(safe-area-inset-top,0px) + 22px) 14px 20px;border-right:1px solid var(--line)}
+.drawer-title{font-size:24px;font-weight:800;margin:0 10px 18px;letter-spacing:-.03em}
+.drawer-item{display:block;width:100%;text-align:left;padding:13px 12px;border:0;background:transparent;
+  border-radius:12px;font-size:16px;cursor:pointer}
+.drawer-item:hover{background:var(--soft)}
+
+/* 선수 도감 */
+.dex{position:fixed;inset:0;z-index:10;background:var(--bg);overflow-y:auto;font-size:16px}
+.dex-head{display:flex;justify-content:space-between;align-items:center;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) 20px 8px}
+.dex-head h2{margin:0;font-size:21px}
+.dex-body{max-width:900px;margin:0 auto;padding:8px 20px 40px}
 .search{display:flex;gap:8px}
-.search input{flex:1;min-width:0;padding:12px 14px;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
-.search button{padding:12px 18px;font-size:1rem;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer}
-.search input:focus,.search button:focus-visible,.filter-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-
+.search input{flex:1;min-width:0;padding:12px 14px;font-size:16px;border:1.5px solid var(--line);
+  border-radius:12px;background:var(--bg);color:var(--ink)}
+.search button{padding:12px 18px;font-size:16px;border:0;border-radius:12px;background:var(--ink);
+  color:#fff;font-weight:700;cursor:pointer}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
-.filter-btn{padding:8px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:.95rem;cursor:pointer}
-.filter-btn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
-
-#resultCount{color:var(--sub);font-size:.9rem;margin:6px 0 12px}
+.filter-btn{padding:8px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--bg);
+  font-size:15px;cursor:pointer}
+.filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+#resultCount{color:var(--sub);font-size:14px;margin:6px 0 12px}
 #cardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-
-.player-card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px}
+.player-card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px}
 .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.player-name{font-size:1.15rem;font-weight:800}
-.position-badge{background:var(--chip);border-radius:6px;padding:2px 9px;font-weight:700;font-size:.85rem}
-.player-detail{font-size:.93rem;color:var(--sub);margin:3px 0}
-.ai-summary{margin-top:12px;padding:10px 12px;background:var(--ai);border:1px solid var(--ai-line);border-radius:10px;font-size:.93rem}
+.player-name{font-size:18px;font-weight:800}
+.position-badge{background:var(--tag);border-radius:6px;padding:2px 9px;font-weight:700;font-size:13px}
+.player-detail{font-size:15px;color:var(--sub);margin:3px 0}
+.ai-summary{margin-top:12px;padding:10px 12px;background:var(--ai);border-radius:12px;font-size:15px}
 .ai-summary strong{display:block;margin-bottom:3px}
 .empty{grid-column:1/-1;text-align:center;color:var(--sub);padding:30px}
-.chat{margin:18px 0 10px}
-.chat-log{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
-.msg{padding:10px 12px;border-radius:12px;max-width:90%;white-space:pre-wrap}
-.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
-.msg.ai{align-self:flex-start;background:var(--ai);border:1px solid var(--ai-line)}
+
+/* 폰 세로 화면: 추천 질문을 2줄로 */
+@media (max-width:700px){
+  html{font-size:13px}
+  .hero{width:100%}
+  .logo{transform:translateX(-1rem)}
+  .sub{font-size:1.5rem}
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+  .chip{padding:0 1rem;font-size:1.2rem;height:3.6rem;justify-content:flex-start}
+  .chip svg{width:1.8rem;height:1.8rem}
+  .composer{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 2rem)}
+  .bar{height:4.8rem}
+  .send{width:3.8rem;height:3.8rem}
+}
