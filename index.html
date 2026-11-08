@@ -2,28 +2,93 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI 축구 비서</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fotmini - AI 축구 비서</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-  <h1>AI 축구 비서</h1>
-  <p class="lead">선수 이름, 팀, 국적, 플레이 스타일로 검색해 보세요.</p>
 
-  <div class="search">
-    <input id="searchInput" type="text" placeholder="예: 손흥민, 토트넘, 헤더, 독일">
-    <button id="searchBtn" type="button">검색</button>
+<header class="topbar">
+  <button id="menuBtn" class="round" type="button" aria-label="메뉴">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/></svg>
+  </button>
+  <button id="loginBtn" class="pill" type="button">로그인</button>
+</header>
+
+<main class="stage">
+  <section class="hero" id="hero">
+    <div class="logo">Fotmini<svg class="ball" viewBox="0 0 95 80" aria-hidden="true">
+      <path d="M2 79C30 85 76 68 91 36 82 56 40 72 2 79z" fill="#c9ccd9"/>
+      <circle cx="61" cy="29" r="28" fill="#fff" stroke="#16171b" stroke-width="2.6"/>
+      <path d="M61 19l9.5 7-3.6 11H55.1L51.5 26z" fill="#16171b"/>
+      <path d="M61 19V4M70.5 26l15.500-5M66.900 37l9 13M55.100 37l-9 13M51.500 26l-15.500-5" fill="none" stroke="#16171b" stroke-width="2.6" stroke-linecap="round"/>
+    </svg></div>
+    <h1>당신의 AI 축구 비서</h1>
+    <p class="sub">축구에 관한 모든 것, Fotmini와 함께.</p>
+
+    <div class="divider"><span>추천 질문</span></div>
+    <div class="chips">
+      <button type="button" class="chip" data-q="최근 경기를 분석해 줘">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8l3.600 2.600-1.400 4.200H9.800l-1.400-4.200z" fill="currentColor"/><path d="M12 8V2.200M15.600 10.600l5.300-1.700M14.200 14.800l3.300 4.500M9.800 14.800l-3.300 4.500M8.400 10.600L3.100 8.900"/></svg>
+        <span>경기 분석해 줘</span>
+      </button>
+      <button type="button" class="chip" data-q="손흥민과 비슷한 선수를 비교해서 알려줘">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2.500" y="13" width="3.400" height="8" rx=".5"/><rect x="8" y="9" width="3.400" height="12" rx=".5"/><rect x="13.500" y="4" width="3.400" height="17" rx=".5"/><rect x="19" y="10" width="2.500" height="11" rx=".5"/></svg>
+        <span>선수 비교해 줘</span>
+      </button>
+      <button type="button" class="chip" data-q="4-3-3 전술의 장단점을 분석해 줘">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.500 2.500l4 4M6.500 2.500l-4 4"/><circle cx="19.500" cy="19.500" r="2.300"/><path d="M4.500 11c0 6 5 8.500 10.500 8.500" stroke-dasharray="1.800 2.600"/><path d="M12.500 11.500c-1.500-4 2-7.500 7-7.500" stroke-dasharray="1.800 2.600"/><path d="M17.600 2.200L20 4l-2.200 2.400"/></svg>
+        <span>전술 분석해 줘</span>
+      </button>
+      <button type="button" class="chip" data-q="요즘 축구 이슈를 알려줘">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.500" y="4" width="19" height="16" rx="1.500"/><path d="M6 8.500h6M6 12h12M6 15.500h12"/><rect x="14.500" y="7" width="3.500" height="3" fill="currentColor"/></svg>
+        <span>축구 뉴스 알려줘</span>
+      </button>
+    </div>
+  </section>
+
+  <div id="chatLog" class="chat-log"></div>
+</main>
+
+<footer class="composer">
+  <div class="bar">
+    <button id="newBtn" class="plus" type="button" aria-label="새 대화">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.500v17M3.500 12h17"/></svg>
+    </button>
+    <input id="chatInput" type="text" aria-label="질문 입력" autocomplete="off">
+    <button id="chatBtn" class="send" type="button" aria-label="보내기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M21.500 2.500L2.500 10l7.500 3 3 7.500z"/><path d="M10 13L21.500 2.500"/></svg>
+    </button>
   </div>
+</footer>
 
-   <div class="chat">
-    <div id="chatLog" class="chat-log"></div>
+<div id="overlay" class="overlay" hidden></div>
+<aside id="drawer" class="drawer" hidden>
+  <div class="drawer-title">Fotmini</div>
+  <button type="button" id="drawerNew" class="drawer-item">새 대화</button>
+  <button type="button" id="drawerDex" class="drawer-item">선수 도감</button>
+</aside>
+
+<section id="dex" class="dex" hidden>
+  <div class="dex-head">
+    <h2>선수 도감</h2>
+    <button type="button" id="dexClose" class="round small" aria-label="닫기">✕</button>
+  </div>
+  <div class="dex-body">
     <div class="search">
-      <input id="chatInput" type="text" placeholder="AI에게 물어보기 (예: 손흥민 같은 선수 추천해줘)">
-      <button id="chatBtn" type="button">질문</button>
-  <div id="resultCount"></div>
-  <div id="cardGrid"></div>
-</div>
+      <input id="searchInput" type="text" placeholder="예: 손흥민, 토트넘, 헤더, 독일">
+      <button id="searchBtn" type="button">검색</button>
+    </div>
+    <div class="filters">
+      <button type="button" class="filter-btn active" data-filter="ALL">전체</button>
+      <button type="button" class="filter-btn" data-filter="FW">공격수</button>
+      <button type="button" class="filter-btn" data-filter="MF">미드필더</button>
+      <button type="button" class="filter-btn" data-filter="DF">수비수</button>
+    </div>
+    <div id="resultCount"></div>
+    <div id="cardGrid"></div>
+  </div>
+</section>
 
 <script src="script.js"></script>
 </body>
