@@ -189,7 +189,7 @@ module.exports = async function (req, res) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: system }] },
         contents: contents,
-        generationConfig: { maxOutputTokens: 1000 }
+        generationConfig: { maxOutputTokens: 1800 }
       })
     });
 
