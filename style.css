@@ -1,20 +1,22 @@
 :root{
   --bg:#fdfdfd; --ink:#16171b; --sub:#76777d; --line:#e2e2e5;
   --soft:#ededef; --chip:#f4f4f5; --ai:#f1f2f4; --card:#fff; --tag:#e8ecef;
+  --dw:clamp(300px,26.25rem,420px);
   color-scheme: light;
 }
 /* 1rem = 시안 기준 16px. 화면 폭에 비례해 커지고 줄어요 */
 html{font-size:clamp(9px,1.0638vw,16px)}
 *{box-sizing:border-box}
 [hidden]{display:none !important}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);
+html,body{height:var(--vh,100dvh);overflow:hidden;overscroll-behavior:none}
+body{position:fixed;top:0;left:0;right:0;display:flex;flex-direction:column;margin:0;
+  background:var(--bg);color:var(--ink);
   font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.4}
 button{font-family:inherit;color:inherit}
 svg{display:block}
 
 /* 상단 버튼 */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;
+.topbar{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;
   padding:calc(env(safe-area-inset-top,0px) + 1.6rem) 1.9rem 0;pointer-events:none}
 .topbar>*{pointer-events:auto}
 .round{width:4.125rem;height:4.125rem;border-radius:50%;border:0;background:var(--soft);
@@ -25,9 +27,10 @@ svg{display:block}
   font-size:1.25rem;cursor:pointer}
 
 /* 메인 */
-.stage{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:6rem 1rem 12rem}
-.hero{width:66.8rem;max-width:100%;text-align:center}
+.stage{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;align-items:center;padding:6rem 1rem 1rem;
+  transition:margin-left .38s cubic-bezier(.22,.9,.3,1)}
+.hero{margin:auto;width:66.8rem;max-width:100%;text-align:center}
 .logo{position:relative;display:inline-block;font-size:4.5rem;font-weight:800;
   letter-spacing:-.04em;line-height:1;transform:translateX(-2.1rem)}
 .ball{position:absolute;left:calc(100% + .3rem);top:-2.1rem;width:5.95rem;height:5rem}
@@ -44,8 +47,9 @@ h1{font-size:2.35rem;font-weight:500;margin:.8rem 0 0;letter-spacing:-.02em;line
 .chip:active{transform:scale(.98)}
 
 /* 입력창 */
-.composer{position:fixed;left:0;right:0;bottom:0;z-index:4;
-  padding:0 1rem calc(env(safe-area-inset-bottom,0px) + 5rem)}
+.composer{flex:none;background:var(--bg);
+  padding:0 1rem calc(env(safe-area-inset-bottom,0px) + 5rem);
+  transition:margin-left .38s cubic-bezier(.22,.9,.3,1)}
 .bar{width:68rem;max-width:100%;height:5.75rem;margin:0 auto;display:flex;align-items:center;
   padding:0 .9rem 0 2.1rem;border:1px solid var(--line);border-radius:999px;background:#fbfbfb;
   box-shadow:0 2px 8px rgba(0,0,0,.04)}
@@ -57,23 +61,70 @@ h1{font-size:2.35rem;font-weight:500;margin:.8rem 0 0;letter-spacing:-.02em;line
 .send svg{width:2.1rem;height:2.1rem}
 .send:disabled{opacity:.4}
 
-/* 대화 시작 후 */
-body.chatting .hero{display:none}
-body.chatting .stage{justify-content:flex-start;padding-top:7rem}
-body.chatting .composer{background:linear-gradient(to top,var(--bg) 60%,transparent);padding-top:1.5rem}
-.chat-log{width:68rem;max-width:100%;display:flex;flex-direction:column;gap:1rem}
+/* 대화 시작 후: 위쪽 로고는 작게 남겨요 */
+body.chatting .hero{display:block;margin:0 auto 2.5rem;zoom:.7}
+body.chatting .stage{justify-content:flex-start;padding-top:6rem}
+body.chatting .composer{padding-top:.8rem}
+.chat-log{width:68rem;max-width:100%;margin:0 auto;display:flex;flex-direction:column;gap:1rem}
 .msg{padding:.8rem 1.2rem;border-radius:1.4rem;max-width:88%;white-space:pre-wrap;word-break:break-word;font-size:1.3rem}
 .msg.me{align-self:flex-end;background:var(--ink);color:#fff}
-.msg.ai{align-self:flex-start;background:var(--ai)}
+.msg.ai{align-self:flex-start;background:var(--ai);max-width:94%}
 
-/* 메뉴 */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:8}
-.drawer{position:fixed;top:0;bottom:0;left:0;width:270px;z-index:9;background:var(--bg);
-  padding:calc(env(safe-area-inset-top,0px) + 22px) 14px 20px;border-right:1px solid var(--line)}
-.drawer-title{font-size:24px;font-weight:800;margin:0 10px 18px;letter-spacing:-.03em}
-.drawer-item{display:block;width:100%;text-align:left;padding:13px 12px;border:0;background:transparent;
-  border-radius:12px;font-size:16px;cursor:pointer}
-.drawer-item:hover{background:var(--soft)}
+/* AI 답변 가독성 */
+.msg.ai.md{white-space:normal;line-height:1.65}
+.msg.ai.md p{margin:0 0 .75em}
+.msg.ai.md p:last-child,.msg.ai.md ul:last-child,.msg.ai.md ol:last-child,.msg.ai.md .md-table:last-child{margin-bottom:0}
+.msg.ai.md strong{font-weight:800}
+.msg.ai.md .md-h{font-size:1.1em;font-weight:800;margin:1em 0 .4em}
+.msg.ai.md .md-h:first-child{margin-top:0}
+.msg.ai.md ul,.msg.ai.md ol{margin:0 0 .75em;padding-left:1.4em}
+.msg.ai.md li{margin:.25em 0}
+.msg.ai.md code{background:rgba(0,0,0,.07);padding:.1em .35em;border-radius:5px;font-size:.92em}
+.msg.ai.md .md-table{overflow-x:auto;margin:0 0 .75em;-webkit-overflow-scrolling:touch}
+.msg.ai.md table{border-collapse:collapse;font-size:.93em;min-width:100%}
+.msg.ai.md th,.msg.ai.md td{border:1px solid var(--line);padding:.45em .7em;text-align:left;white-space:nowrap}
+.msg.ai.md th{background:rgba(0,0,0,.05);font-weight:800}
+
+/* ===== 슬라이드 메뉴 ===== */
+.overlay{position:fixed;inset:0;z-index:8;background:rgba(0,0,0,.28);
+  opacity:0;pointer-events:none;transition:opacity .38s}
+body.drawer-open .overlay{opacity:1;pointer-events:auto}
+
+.drawer{position:fixed;top:0;bottom:0;left:0;width:var(--dw);max-width:88vw;z-index:9;
+  background:#f5f5f6;overflow-y:auto;
+  padding:calc(env(safe-area-inset-top,0px) + 1.6rem) 1.75rem 2rem;
+  transform:translateX(-102%);visibility:hidden;
+  transition:transform .38s cubic-bezier(.22,.9,.3,1),visibility 0s linear .38s}
+body.drawer-open .drawer{transform:none;visibility:visible;
+  transition:transform .38s cubic-bezier(.22,.9,.3,1),visibility 0s}
+
+.drawer-top{margin-bottom:1.9rem}
+.menu-row{display:flex;align-items:center;gap:1.1rem;width:100%;height:4.75rem;margin-bottom:.75rem;
+  padding:0 1.4rem;border:1px solid var(--line);border-radius:1.15rem;background:#fff;
+  font-size:1.4rem;text-align:left;cursor:pointer}
+.menu-row svg{width:2.2rem;height:2.2rem;flex:none}
+.menu-row span{flex:1}
+.menu-row .chev{width:1.7rem;height:1.7rem;color:var(--ink)}
+.menu-row:active{background:#f1f1f2}
+
+.drawer-line{height:1px;background:var(--line);margin:1.7rem 0 1.5rem}
+.hist-head{display:flex;justify-content:space-between;align-items:center;color:var(--sub);
+  font-size:1.2rem;margin:0 .1rem 1rem}
+.hist-clear{width:2.6rem;height:2.6rem;border:0;background:transparent;padding:0;color:var(--sub);cursor:pointer}
+.hist-clear svg{width:100%;height:100%}
+.hist-item{display:flex;align-items:center;gap:1rem;width:100%;height:3.95rem;padding:0 .4rem;
+  border:0;background:transparent;border-radius:.9rem;font-size:1.3rem;text-align:left;cursor:pointer}
+.hist-item svg{width:2.3rem;height:2.3rem;flex:none}
+.hist-item.active{background:rgba(0,0,0,.06)}
+.hist-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-date{flex:none;color:var(--sub);font-size:1.1rem}
+.hist-empty{color:var(--sub);font-size:1.15rem;padding:.6rem .4rem;margin:0}
+
+/* 넓은 화면에서는 메인 화면이 옆으로 밀려요 */
+@media (min-width:900px){
+  body.drawer-open .stage,body.drawer-open .composer{margin-left:var(--dw)}
+  .overlay{display:none}
+}
 
 /* 선수 도감 */
 .dex{position:fixed;inset:0;z-index:10;background:var(--bg);overflow-y:auto;font-size:16px}
@@ -114,34 +165,3 @@ body.chatting .composer{background:linear-gradient(to top,var(--bg) 60%,transpar
   .bar{height:4.8rem}
   .send{width:3.8rem;height:3.8rem}
 }
-/* 대화창은 안에서 스크롤, 입력창은 맨 아래 고정 */
-html,body{height:var(--vh,100dvh);overflow:hidden;overscroll-behavior:none}
-body{position:fixed;top:0;left:0;right:0;display:flex;flex-direction:column}
-.topbar{position:absolute}
-.stage{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  justify-content:flex-start;padding:6rem 1rem 1rem}
-.hero{margin:auto}
-.composer{position:static;flex:none;background:var(--bg)}
-body.chatting .composer{background:var(--bg);padding-top:.8rem}
-body.chatting .stage{padding-top:7rem}
-.chat-log{margin:0 auto}
-
-/* 대화를 시작해도 위쪽 로고와 추천 질문을 그대로 보여줘요 (조금 작게) */
-body.chatting .hero{display:block;margin:0 auto 2.5rem;zoom:.5}
-body.chatting .stage{justify-content:flex-start;padding-top:6rem}
-
-/* AI 답변 가독성 */
-.msg.ai.md{white-space:normal;line-height:1.65}
-.msg.ai.md p{margin:0 0 .75em}
-.msg.ai.md p:last-child,.msg.ai.md ul:last-child,.msg.ai.md ol:last-child,.msg.ai.md .md-table:last-child{margin-bottom:0}
-.msg.ai.md strong{font-weight:800}
-.msg.ai.md .md-h{font-size:1.1em;font-weight:800;margin:1em 0 .4em}
-.msg.ai.md .md-h:first-child{margin-top:0}
-.msg.ai.md ul,.msg.ai.md ol{margin:0 0 .75em;padding-left:1.4em}
-.msg.ai.md li{margin:.25em 0}
-.msg.ai.md code{background:rgba(0,0,0,.07);padding:.1em .35em;border-radius:5px;font-size:.92em}
-.msg.ai.md .md-table{overflow-x:auto;margin:0 0 .75em;-webkit-overflow-scrolling:touch}
-.msg.ai.md table{border-collapse:collapse;font-size:.93em;min-width:100%}
-.msg.ai.md th,.msg.ai.md td{border:1px solid var(--line);padding:.45em .7em;text-align:left;white-space:nowrap}
-.msg.ai.md th{background:rgba(0,0,0,.05);font-weight:800}
-.msg.ai{max-width:94%}
