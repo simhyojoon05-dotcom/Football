@@ -148,7 +148,7 @@ module.exports = async function (req, res) {
     var isUser = m.role !== "model";
     return {
       role: isUser ? "user" : "model",
-      parts: [{ text: String(m.text || "").slice(0, isUser ? 500 : 2000) }]
+      parts: [{ text: String(m.text || "").slice(0, isUser ? 200 : 2000) }]
     };
   }).filter(function (m) { return m.parts[0].text.trim(); });
 
