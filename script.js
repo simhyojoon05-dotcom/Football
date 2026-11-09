@@ -73,27 +73,44 @@ filterBtns.forEach(function (btn) {
 
 applyFilter();
 
-// ===== 메뉴 / 도감 열고 닫기 =====
+// ===== 슬라이드 메뉴 / 도감 열고 닫기 =====
 var drawer = document.getElementById("drawer");
 var overlay = document.getElementById("overlay");
 var dex = document.getElementById("dex");
 
-function openDrawer() { drawer.hidden = false; overlay.hidden = false; }
-function closeDrawer() { drawer.hidden = true; overlay.hidden = true; }
+function isNarrow() { return window.matchMedia("(max-width: 899px)").matches; }
+
+function openDrawer() {
+  document.body.classList.add("drawer-open");
+  drawer.setAttribute("aria-hidden", "false");
+  renderHistory();
+}
+function closeDrawer() {
+  document.body.classList.remove("drawer-open");
+  drawer.setAttribute("aria-hidden", "true");
+}
 
 document.getElementById("menuBtn").addEventListener("click", openDrawer);
+document.getElementById("drawerClose").addEventListener("click", closeDrawer);
 overlay.addEventListener("click", closeDrawer);
+
+document.getElementById("drawerNew").addEventListener("click", function () {
+  newChat();
+  if (isNarrow()) closeDrawer();
+});
 document.getElementById("drawerDex").addEventListener("click", function () {
   closeDrawer();
   dex.hidden = false;
 });
-document.getElementById("dexClose").addEventListener("click", function () { dex.hidden = true; });
-document.getElementById("drawerNew").addEventListener("click", function () {
-  closeDrawer();
-  newChat();
+document.getElementById("drawerSettings").addEventListener("click", function () {
+  alert("설정 기능은 준비 중이에요.");
 });
+document.getElementById("dexClose").addEventListener("click", function () { dex.hidden = true; });
 document.getElementById("loginBtn").addEventListener("click", function () {
   alert("로그인 기능은 준비 중이에요.");
+});
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") { closeDrawer(); dex.hidden = true; }
 });
 
 // ===== AI 답변을 보기 좋게 바꾸는 함수 (마크다운 → 화면용) =====
@@ -179,33 +196,170 @@ function renderMarkdown(text) {
   return html;
 }
 
+// ===== 채팅 기록 (이 기기의 브라우저에만 저장돼요) =====
+var HIST_KEY = "fotmini_history_v1";
+var MAX_CHATS = 30;
+var chats = [];           // [{id, title, titled, ts, messages:[{role,text}]}]
+var currentChatId = null;
+var titling = {};
+
+var BUBBLE_SVG =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="M4 5h16a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 17H10l-4.5 3.5V17H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 5z"/>' +
+  '<path d="M8 11h.01M12 11h.01M16 11h.01" stroke-width="2.6"/></svg>';
+
+function loadChats() {
+  try {
+    var raw = localStorage.getItem(HIST_KEY);
+    chats = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(chats)) chats = [];
+  } catch (e) { chats = []; }
+}
+
+function persistChats() {
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(chats)); } catch (e) {}
+}
+
+function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+function fmtDate(ts) {
+  var d = new Date(ts);
+  return pad2(d.getMonth() + 1) + "." + pad2(d.getDate());
+}
+
+function renderHistory() {
+  var box = document.getElementById("histList");
+  box.innerHTML = "";
+  if (!chats.length) {
+    box.innerHTML = '<p class="hist-empty">아직 대화가 없어요.</p>';
+    return;
+  }
+  chats.forEach(function (c) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "hist-item" + (c.id === currentChatId ? " active" : "");
+    b.innerHTML = BUBBLE_SVG + '<span class="hist-title"></span><span class="hist-date"></span>';
+    b.querySelector(".hist-title").textContent = c.title;
+    b.querySelector(".hist-date").textContent = fmtDate(c.ts);
+    b.addEventListener("click", function () { openChat(c.id); });
+    box.appendChild(b);
+  });
+}
+
+function saveCurrentChat() {
+  if (!chatHistory.length) return;
+  var chat = null;
+  for (var i = 0; i < chats.length; i++) {
+    if (chats[i].id === currentChatId) { chat = chats[i]; chats.splice(i, 1); break; }
+  }
+  if (!chat) {
+    currentChatId = String(Date.now());
+    chat = { id: currentChatId, title: String(chatHistory[0].text).slice(0, 40), titled: false };
+  }
+  chat.ts = Date.now();
+  chat.messages = chatHistory.slice(-40);
+  chats.unshift(chat);
+  chats = chats.slice(0, MAX_CHATS);
+  persistChats();
+  renderHistory();
+
+  // 아직 요약 제목이 없으면 AI에게 제목을 부탁해요
+  if (!chat.titled && chatHistory.length >= 2) {
+    makeTitle(chat.id, chatHistory[0].text, chatHistory[1].text);
+  }
+}
+
+async function makeTitle(id, question, answer) {
+  if (titling[id]) return;
+  titling[id] = true;
+  try {
+    var res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: "title", question: question, answer: answer })
+    });
+    var data = await res.json();
+    var t = ((data && data.title) || "").trim();
+    if (!t) return;
+    for (var i = 0; i < chats.length; i++) {
+      if (chats[i].id === id) { chats[i].title = t; chats[i].titled = true; break; }
+    }
+    persistChats();
+    renderHistory();
+  } catch (e) {
+    // 실패하면 임시 제목을 그대로 써요
+  } finally {
+    titling[id] = false;
+  }
+}
+
+document.getElementById("histClear").addEventListener("click", function () {
+  if (!chats.length) return;
+  if (confirm("저장된 채팅 기록을 모두 지울까요?")) {
+    chats = [];
+    currentChatId = null;
+    persistChats();
+    renderHistory();
+  }
+});
+
 // ===== AI 채팅 =====
 var chatLog = document.getElementById("chatLog");
 var chatInput = document.getElementById("chatInput");
 var chatBtn = document.getElementById("chatBtn");
+
+// 지난 대화를 기억해서 서버로 같이 보내요
+var chatHistory = [];
+var busy = false;
 
 function addMsg(text, who) {
   var div = document.createElement("div");
   div.className = "msg " + who;
   div.textContent = text;
   chatLog.appendChild(div);
-  window.scrollTo(0, document.body.scrollHeight);
   return div;
 }
 
-// 지난 대화를 기억해서 서버로 같이 보내요
-var chatHistory = [];
+function addAiMd(text) {
+  var div = addMsg("", "ai");
+  div.innerHTML = renderMarkdown(text);
+  div.classList.add("md");
+  return div;
+}
 
 function newChat() {
+  if (busy) return;
   chatLog.innerHTML = "";
   chatHistory = [];
+  currentChatId = null;
   document.body.classList.remove("chatting");
   chatInput.value = "";
+  renderHistory();
+}
+
+function openChat(id) {
+  if (busy) return;
+  var c = null;
+  for (var i = 0; i < chats.length; i++) { if (chats[i].id === id) { c = chats[i]; break; } }
+  if (!c) return;
+
+  chatLog.innerHTML = "";
+  chatHistory = c.messages.slice();
+  currentChatId = id;
+  chatHistory.forEach(function (m) {
+    if (m.role === "model") addAiMd(m.text);
+    else addMsg(m.text, "me");
+  });
+  document.body.classList.add("chatting");
+  renderHistory();
+  if (isNarrow()) closeDrawer();
 }
 
 async function sendChat(text) {
+  if (busy) return;
   var q = (text || chatInput.value).trim();
   if (!q) return;
+
+  busy = true;
   document.body.classList.add("chatting");
   addMsg(q, "me");
   chatInput.value = "";
@@ -231,6 +385,7 @@ async function sendChat(text) {
       waiting.innerHTML = renderMarkdown(data.reply);
       waiting.classList.add("md");
       chatHistory.push({ role: "model", text: data.reply });
+      saveCurrentChat();
     } else {
       waiting.textContent = data.error || "답변을 받지 못했어요.";
       chatHistory.pop(); // 실패한 질문은 기억에서 빼요
@@ -239,6 +394,7 @@ async function sendChat(text) {
     waiting.textContent = "연결에 실패했어요. 잠시 후 다시 시도해 주세요.";
     chatHistory.pop();
   }
+  busy = false;
   chatBtn.disabled = false;
 }
 
@@ -253,6 +409,9 @@ document.querySelectorAll(".chip").forEach(function (chip) {
     sendChat(chip.getAttribute("data-q"));
   });
 });
+
+loadChats();
+renderHistory();
 
 // ===== 화면 고정 (대화창만 스크롤) =====
 // 새 메시지가 오면 대화창을 맨 아래로 내려요
