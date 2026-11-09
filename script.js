@@ -220,7 +220,12 @@ async function sendChat(text) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: chatHistory })
     });
-    var data = await res.json();
+
+    // 서버가 이상한 응답을 주면 그 내용을 그대로 보여줘서 원인을 알 수 있게 해요
+    var raw = await res.text();
+    var data;
+    try { data = JSON.parse(raw); }
+    catch (err) { data = { error: "서버 오류 (" + res.status + "): " + raw.slice(0, 80) }; }
 
     if (data.reply) {
       waiting.innerHTML = renderMarkdown(data.reply);
