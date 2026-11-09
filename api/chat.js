@@ -1,6 +1,6 @@
 var MODEL = "gemini-3.5-flash-lite";
 
-var BASE_SYSTEM = "너는 축구 전문 AI 비서야. 한국어로 친근하게 답해. 선수, 전술, 팀에 대한 질문에 답해. 앞선 대화 내용을 기억하고 이어서 답해. 너의 기본 지식은 오래됐을 수 있어서 최신 정보는 모를 수 있어. 아래에 '참고 데이터'가 있으면 그 내용을 우선해서 답하고, 영어 내용은 한국어로 풀어서 설명해. 선수 이름은 영어 표기와 한국어 표기를 서로 맞춰서 찾아줘. 참고 데이터에 없는 최신 정보나 선수 기록은 아는 척하지 말고, 확인할 수 없다고 솔직하게 말해.\n\n[답변 형식 규칙] 휴대폰 화면에서 읽기 쉽게 써. 1) 첫 줄에 결론을 한두 문장으로 먼저 말해. 2) 문단은 2~3문장 이내로 짧게 나누고 문단 사이는 한 줄 비워. 3) 핵심 단어나 숫자는 **굵게** 표시해. 4) 항목이 여러 개면 '- '로 시작하는 목록을 써. 순서가 중요하면 '1. '을 써. 5) 두 대상을 비교할 때는 마크다운 표를 써. 표는 열을 3개 이하로, 행은 8개 이하로 하고, 표 아래에 한두 문장으로 해석을 덧붙여. 6) 제목은 꼭 필요할 때만 '## 제목' 한 단계만 써. 7) 이모지는 쓰더라도 문단당 하나 이하로 아껴. 8) 전체 길이는 필요한 만큼만 쓰고 같은 말을 반복하지 마. 9) 참고 데이터를 썼다면 맨 마지막 줄에 '출처: ...'를 한 줄로 적어. HTML 태그는 쓰지 마.";
+var BASE_SYSTEM = "너는 축구 전문 AI 비서야. 한국어로 친근하게 답해. 선수, 전술, 팀에 대한 질문에 답해. 앞선 대화 내용을 기억하고 이어서 답해. 너의 기본 지식은 오래됐을 수 있어서 최신 정보는 모를 수 있어. 아래에 '참고 데이터'가 있으면 그 내용을 우선해서 답하고, 영어 내용은 한국어로 풀어서 설명해. 선수 이름은 영어 표기와 한국어 표기를 서로 맞춰서 찾아줘. 참고 데이터에 없는 최신 정보나 선수 기록은 아는 척하지 말고, 확인할 수 없다고 솔직하게 말해.\n\n[선수 비교 규칙] 선수를 비교할 때는 참고 데이터의 출전 경기 수, 골, 도움, 페널티 제외 골, 경기당 골, 경기당 공격 포인트를 근거로 표로 비교해. 비교하려는 선수가 참고 데이터(리그별 득점 순위 상위 30명)에 없으면 그 선수의 수치는 확인할 수 없다고 말하고 추측해서 채우지 마. 도움이 '집계 없음'이면 그 수치는 비교하지 마. 슈팅, 패스, 기대득점(xG) 같은 지표는 데이터에 없으니 비교할 수 없다고 먼저 알려줘. 출전 경기 수가 서로 크게 다르면 표본 차이도 같이 언급해. 서로 다른 리그 선수의 수치는 리그 수준이 달라 단순 비교가 어렵다는 점도 한 줄로 덧붙여.\n\n[답변 형식 규칙] 휴대폰 화면에서 읽기 쉽게 써. 1) 첫 줄에 결론을 한두 문장으로 먼저 말해. 2) 문단은 2~3문장 이내로 짧게 나누고 문단 사이는 한 줄 비워. 3) 핵심 단어나 숫자는 **굵게** 표시해. 4) 항목이 여러 개면 '- '로 시작하는 목록을 써. 순서가 중요하면 '1. '을 써. 5) 두 대상을 비교할 때는 마크다운 표를 써. 표는 열을 3개 이하로, 행은 8개 이하로 하고, 표 아래에 한두 문장으로 해석을 덧붙여. 6) 제목은 꼭 필요할 때만 '## 제목' 한 단계만 써. 7) 이모지는 쓰더라도 문단당 하나 이하로 아껴. 8) 전체 길이는 필요한 만큼만 쓰고 같은 말을 반복하지 마. 9) 참고 데이터를 썼다면 맨 마지막 줄에 '출처: ...'를 한 줄로 적어. HTML 태그는 쓰지 마.";
 
 // 무료 구간에서 쓸 수 있는 리그와, 질문에서 찾을 단어들
 var LEAGUES = [
@@ -14,7 +14,7 @@ var LEAGUES = [
 
 var NEWS_RE = /뉴스|소식|이슈|이적|부상|오늘|어제|최근|요즘|근황|화제/;
 var TABLE_RE = /순위|승점|득실|결과|스코어|경기|리그|우승|강등|1위|몇 위|몇위/;
-var PLAYER_RE = /득점|골|어시|도움|기록|전적|스탯|성적|폼|활약|페널티/;
+var PLAYER_RE = /득점|골|어시|도움|기록|전적|스탯|성적|폼|활약|페널티|비교|지표|세부|분석|효율|득점력|vs/;
 
 // 같은 데이터를 30분 동안 재사용해서 무료 호출 한도를 아껴요
 var cache = {};
@@ -46,6 +46,10 @@ function pick(s, tag) {
 
 function dayStr(offset) {
   return new Date(Date.now() + offset * 86400000).toISOString().slice(0, 10);
+}
+
+function fmt(n) {
+  return (Math.round(n * 100) / 100).toFixed(2);
 }
 
 // B. 뉴스 (BBC 축구 RSS)
@@ -96,7 +100,7 @@ async function getLeague(lg, token) {
   });
 }
 
-// A-2. 리그별 득점 순위 = 선수 시즌 기록 (football-data.org)
+// A-2. 리그별 득점 순위 + 직접 계산한 세부지표 (football-data.org)
 async function getScorers(lg, token) {
   return cached("sc:" + lg.code, async function () {
     var h = { "X-Auth-Token": token };
@@ -104,109 +108,16 @@ async function getScorers(lg, token) {
     var data = await r.json();
     if (!data.scorers || !data.scorers.length) return "";
     var year = data.season && data.season.startDate ? data.season.startDate.slice(0, 4) + " 시즌 " : "";
-    return "[" + lg.name + " " + year + "득점 순위 상위 30명 (시즌 누적 기록)]\n" +
-      data.scorers.map(function (s, i) {
-        return (i + 1) + ". " + s.player.name + " (" + s.team.name + ") 출전 " + (s.playedMatches || 0) +
-          "경기, 골 " + (s.goals || 0) + ", 도움 " + (s.assists || 0) + ", 페널티골 " + (s.penalties || 0);
-      }).join("\n");
-  });
-}
 
-module.exports = async function (req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "POST만 가능해요." });
-  }
+    var rows = data.scorers.map(function (s, i) {
+      var gp = s.playedMatches || 0;
+      var g = s.goals || 0;
+      var pk = s.penalties || 0;
+      var hasA = s.assists !== null && s.assists !== undefined;
+      var a = hasA ? s.assists : 0;
 
-  var incoming = (req.body && req.body.messages) || [];
-  if (!Array.isArray(incoming)) incoming = [];
+      var line = (i + 1) + ". " + s.player.name + " (" + s.team.name + ") 출전 " + gp + "경기, 골 " + g +
+        ", 도움 " + (hasA ? a : "집계 없음") + ", 페널티골 " + pk;
 
-  var contents = incoming.slice(-12).map(function (m) {
-    var isUser = m.role !== "model";
-    return {
-      role: isUser ? "user" : "model",
-      parts: [{ text: String(m.text || "").slice(0, isUser ? 500 : 2000) }]
-    };
-  }).filter(function (m) { return m.parts[0].text.trim(); });
-
-  while (contents.length && contents[0].role !== "user") contents.shift();
-
-  if (!contents.length || contents[contents.length - 1].role !== "user") {
-    return res.status(400).json({ error: "질문을 입력해 주세요." });
-  }
-
-  var key = (process.env.GEMINI_API_KEY || "").trim().replace(/^["']|["']$/g, "");
-  if (!key) {
-    return res.status(500).json({ error: "서버에 GEMINI_API_KEY가 없어요." });
-  }
-
-  // 최근 질문 3개로 어떤 최신 데이터가 필요한지 판단해요
-  var recent = contents.filter(function (m) { return m.role === "user"; })
-    .slice(-3).map(function (m) { return m.parts[0].text; }).join(" ").toLowerCase();
-
-  var extra = "";
-  try {
-    var jobs = [];
-    var fdKey = (process.env.FOOTBALL_DATA_KEY || "").trim();
-    var matched = LEAGUES.filter(function (lg) { return lg.re.test(recent); });
-
-    if (NEWS_RE.test(recent)) {
-      jobs.push(getNews().then(function (t) { return t ? "[최신 축구 뉴스 (BBC)]\n" + t : ""; }).catch(function () { return ""; }));
-    }
-
-    if (fdKey && TABLE_RE.test(recent)) {
-      matched.forEach(function (lg) {
-        jobs.push(getLeague(lg, fdKey).catch(function () { return ""; }));
-      });
-    }
-
-    // 선수 기록 질문이면 득점 순위를 가져와요 (리그를 말하지 않으면 6개 리그 모두)
-    if (fdKey && PLAYER_RE.test(recent)) {
-      var targets = matched.length ? matched : LEAGUES;
-      targets.forEach(function (lg) {
-        jobs.push(getScorers(lg, fdKey).catch(function () { return ""; }));
-      });
-    }
-
-    var results = await Promise.all(jobs);
-    extra = results.filter(Boolean).join("\n\n");
-  } catch (e) {
-    extra = "";
-  }
-
-  var system = BASE_SYSTEM;
-  if (extra) {
-    system += "\n\n[참고 데이터] (최대 30분 정도 늦을 수 있어요. 답할 때 출처가 BBC 뉴스나 football-data.org라고 한 줄로 알려줘.)\n" + extra;
-  }
-
-  try {
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent";
-    var r = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": key
-      },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: contents,
-        generationConfig: { maxOutputTokens: 1800 }
-      })
-    });
-
-    var data = await r.json();
-
-    if (r.status === 429) {
-      return res.status(429).json({ error: "지금 요청이 많아요. 잠시 후 다시 시도해 주세요." });
-    }
-    if (!r.ok) {
-      var detail = (data && data.error && data.error.message) || "알 수 없는 오류";
-      return res.status(500).json({ error: "AI 호출 실패: " + detail });
-    }
-
-    var parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-    var text = parts.map(function (p) { return p.text || ""; }).join("");
-    return res.status(200).json({ reply: text || "답변을 받지 못했어요." });
-  } catch (e) {
-    return res.status(500).json({ error: "서버 오류가 났어요." });
-  }
-};
+      if (gp > 0) {
+        line += " | 경기당
