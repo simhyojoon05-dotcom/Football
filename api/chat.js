@@ -1,6 +1,67 @@
 var MODEL = "gemini-3.5-flash-lite";
 
-var BASE_SYSTEM = "너는 축구 전문 AI 비서야. 한국어로 친근하게 답해. 선수, 전술, 팀에 대한 질문에 답해. 앞선 대화 내용을 기억하고 이어서 답해. 너의 기본 지식은 오래됐을 수 있어서 최신 정보는 모를 수 있어. 아래에 '참고 데이터'가 있으면 그 내용을 우선해서 답하고, 영어 내용은 한국어로 풀어서 설명해. 선수 이름은 영어 표기와 한국어 표기를 서로 맞춰서 찾아줘. 참고 데이터에 없는 최신 정보나 선수 기록은 아는 척하지 말고, 확인할 수 없다고 솔직하게 말해.\n\n[선수 비교 규칙] 선수를 비교할 때는 참고 데이터의 출전 경기 수, 골, 도움, 페널티 제외 골, 경기당 골, 경기당 공격 포인트를 근거로 표로 비교해. 비교하려는 선수가 참고 데이터(리그별 득점 순위 상위 30명)에 없으면 그 선수의 수치는 확인할 수 없다고 말하고 추측해서 채우지 마. 도움이 '집계 없음'이면 그 수치는 비교하지 마. 슈팅, 패스, 기대득점(xG) 같은 지표는 데이터에 없으니 비교할 수 없다고 먼저 알려줘. 출전 경기 수가 서로 크게 다르면 표본 차이도 같이 언급해. 서로 다른 리그 선수의 수치는 리그 수준이 달라 단순 비교가 어렵다는 점도 한 줄로 덧붙여.\n\n[답변 형식 규칙] 휴대폰 화면에서 읽기 쉽게 써. 1) 첫 줄에 결론을 한두 문장으로 먼저 말해. 2) 문단은 2~3문장 이내로 짧게 나누고 문단 사이는 한 줄 비워. 3) 핵심 단어나 숫자는 **굵게** 표시해. 4) 항목이 여러 개면 '- '로 시작하는 목록을 써. 순서가 중요하면 '1. '을 써. 5) 두 대상을 비교할 때는 마크다운 표를 써. 표는 열을 3개 이하로, 행은 8개 이하로 하고, 표 아래에 한두 문장으로 해석을 덧붙여. 6) 제목은 꼭 필요할 때만 '## 제목' 한 단계만 써. 7) 이모지는 쓰더라도 문단당 하나 이하로 아껴. 8) 전체 길이는 필요한 만큼만 쓰고 같은 말을 반복하지 마. 9) 참고 데이터를 썼다면 맨 마지막 줄에 '출처: ...'를 한 줄로 적어. HTML 태그는 쓰지 마.";
+var BASE_SYSTEM = "너는 축구 전문 AI 비서야. 한국어로 답해. 선수, 전술, 팀에 대한 질문에 답해. 앞선 대화 내용을 기억하고 이어서 답해. 너의 기본 지식은 오래됐을 수 있어서 최신 정보는 모를 수 있어. 아래에 '참고 데이터'가 있으면 그 내용을 우선해서 답하고, 영어 내용은 한국어로 풀어서 설명해. 선수 이름은 영어 표기와 한국어 표기를 서로 맞춰서 찾아줘. 참고 데이터에 없는 최신 정보나 선수 기록은 아는 척하지 말고, 확인할 수 없다고 솔직하게 말해.\n\n[선수 비교 규칙] 선수를 비교할 때는 참고 데이터의 출전 경기 수, 골, 도움, 페널티 제외 골, 경기당 골, 경기당 공격 포인트를 근거로 표로 비교해. 비교하려는 선수가 참고 데이터(리그별 득점 순위 상위 30명)에 없으면 그 선수의 수치는 확인할 수 없다고 말하고 추측해서 채우지 마. 도움이 '집계 없음'이면 그 수치는 비교하지 마. 슈팅, 패스, 기대득점(xG) 같은 지표는 데이터에 없으니 비교할 수 없다고 먼저 알려줘. 출전 경기 수가 서로 크게 다르면 표본 차이도 같이 언급해. 서로 다른 리그 선수의 수치는 리그 수준이 달라 단순 비교가 어렵다는 점도 한 줄로 덧붙여.\n\n[답변 형식 규칙] 휴대폰 화면에서 읽기 쉽게 써. 1) 첫 줄에 결론을 한두 문장으로 먼저 말해. 2) 문단은 2~3문장 이내로 짧게 나누고 문단 사이는 한 줄 비워. 3) 핵심 단어나 숫자는 **굵게** 표시해. 4) 항목이 여러 개면 '- '로 시작하는 목록을 써. 순서가 중요하면 '1. '을 써. 5) 두 대상을 비교할 때는 마크다운 표를 써. 표는 열을 3개 이하로, 행은 8개 이하로 하고, 표 아래에 한두 문장으로 해석을 덧붙여. 6) 제목은 꼭 필요할 때만 '## 제목' 한 단계만 써. 7) 이모지는 쓰더라도 문단당 하나 이하로 아껴. 8) 같은 말을 반복하지 마. 9) 참고 데이터를 썼다면 맨 마지막 줄에 '출처: ...'를 한 줄로 적어. HTML 태그는 쓰지 마.";
+
+// 사용자가 설정 화면에서 고른 값을 AI 지시문으로 바꿔요
+var LEN = {
+  short:  { tokens: 800,  text: "답변은 3~5문장 이내로 아주 간단하게 핵심만 말해. 표나 긴 목록은 꼭 필요할 때만 써." },
+  normal: { tokens: 1500, text: "핵심 위주로 적당한 길이로 답해." },
+  long:   { tokens: 2200, text: "근거와 배경을 충분히 넣어서 자세하게 답해." }
+};
+var LEVEL = {
+  general:  "축구를 잘 모르는 사람도 이해하도록 쉬운 말로 설명하고, 전문 용어는 풀어서 써.",
+  detailed: "상세하게 설명하되 어려운 용어는 짧게 풀이해.",
+  expert:   "전술과 데이터 용어를 그대로 쓰는 전문적인 분석 톤으로 답해."
+};
+var TONE = {
+  polite:   "정중한 존댓말(~습니다, ~입니다)로 답해.",
+  friendly: "친근한 해요체(~해요, ~이에요)로 답해.",
+  concise:  "군더더기 없이 간결하게 핵심만 답해."
+};
+var COMP_NAMES = { ucl: "UEFA 챔피언스리그", pl: "프리미어리그", wc: "FIFA 월드컵" };
+var LEAGUE_NAMES = ["프리미어리그", "라리가", "세리에 A", "분데스리가", "리그 1"];
+
+function clean(s, n) {
+  return String(s || "").replace(/[\r\n<>]/g, " ").trim().slice(0, n);
+}
+
+function prefInfo(p) {
+  p = (p && typeof p === "object") ? p : {};
+  var len = LEN[p.len] ? p.len : "normal";
+  var level = LEVEL[p.level] ? p.level : "detailed";
+  var tone = TONE[p.tone] ? p.tone : "friendly";
+  var t = Number(p.tactic);
+  if (!isFinite(t)) t = 50;
+  t = Math.max(0, Math.min(100, t));
+
+  var parts = ["[사용자 설정] " + LEN[len].text + " " + LEVEL[level] + " " + TONE[tone]];
+  parts.push("전술 분석 질문이면 " +
+    (t < 34 ? "핵심 아이디어만 간략하게" : t < 67 ? "적당한 깊이로" : "포메이션, 선수 역할, 공간 활용, 장단점까지 깊이 있게") + " 분석해.");
+
+  var team = clean(p.team, 30);
+  if (team) parts.push("사용자의 응원팀은 " + team + "야. 관련 질문이면 참고하되 편향된 평가는 하지 마.");
+
+  var leagues = (Array.isArray(p.leagues) ? p.leagues : []).map(function (n) { return clean(n, 20); })
+    .filter(function (n) { return LEAGUE_NAMES.indexOf(n) > -1; }).slice(0, 5);
+  var favPlayers = (Array.isArray(p.players) ? p.players : []).map(function (n) { return clean(n, 20); })
+    .filter(Boolean).slice(0, 10);
+  var comps = Object.keys(COMP_NAMES).filter(function (k) { return p.comps && p.comps[k]; })
+    .map(function (k) { return COMP_NAMES[k]; });
+
+  var interest = [];
+  if (leagues.length) interest.push("관심 리그: " + leagues.join(", "));
+  if (favPlayers.length) interest.push("관심 선수: " + favPlayers.join(", "));
+  if (comps.length) interest.push("관심 대회: " + comps.join(", "));
+  if (interest.length) {
+    parts.push("사용자의 관심사(참고용): " + interest.join(" / ") + ". 질문과 직접 관련이 없으면 억지로 언급하지 마.");
+  }
+
+  var nick = clean(p.nickname, 12);
+  if (nick && nick !== "Fotmini 사용자") {
+    parts.push("사용자의 닉네임은 '" + nick + "'야. 가끔 자연스럽게 불러도 되지만 매번 부르지는 마.");
+  }
+  return { text: parts.join(" "), tokens: LEN[len].tokens };
+}
 
 // 무료 구간에서 쓸 수 있는 리그와, 질문에서 찾을 단어들
 var LEAGUES = [
@@ -141,6 +202,33 @@ module.exports = async function (req, res) {
     return res.status(405).json({ error: "POST만 가능해요." });
   }
 
+  // 채팅 제목 요약 요청이면 여기서 바로 처리해요
+  if (req.body && req.body.mode === "title") {
+    var tkey = (process.env.GEMINI_API_KEY || "").trim().replace(/^["']|["']$/g, "");
+    var tq = String(req.body.question || "").slice(0, 300);
+    var ta = String(req.body.answer || "").slice(0, 600);
+    if (!tkey || !tq) return res.status(200).json({ title: "" });
+
+    try {
+      var tr = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": tkey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: "사용자 질문과 AI 답변을 보고, 이 대화의 주제를 한국어 명사구로 12자 안팎으로 요약해. 예: 손흥민 시즌 득점 기록, 4-3-3 전술 장단점, 프리미어리그 순위 확인. 제목만 한 줄로 출력하고 따옴표, 마침표, 설명은 쓰지 마." }] },
+          contents: [{ role: "user", parts: [{ text: "사용자 질문: " + tq + "\nAI 답변: " + ta }] }],
+          generationConfig: { maxOutputTokens: 120, temperature: 0.3 }
+        })
+      });
+      var td = await tr.json();
+      var tparts = (td.candidates && td.candidates[0] && td.candidates[0].content && td.candidates[0].content.parts) || [];
+      var title = tparts.map(function (p) { return p.text || ""; }).join("")
+        .split("\n")[0].replace(/["'“”‘’`*#]/g, "").replace(/[.。]+$/, "").trim().slice(0, 24);
+      return res.status(200).json({ title: title });
+    } catch (e) {
+      return res.status(200).json({ title: "" });
+    }
+  }
+
   var incoming = (req.body && req.body.messages) || [];
   if (!Array.isArray(incoming)) incoming = [];
 
@@ -202,7 +290,8 @@ module.exports = async function (req, res) {
     extra = "";
   }
 
-  var system = BASE_SYSTEM;
+  var pf = prefInfo(req.body && req.body.prefs);
+  var system = BASE_SYSTEM + "\n\n" + pf.text;
   if (extra) {
     system += "\n\n[참고 데이터] (최대 30분 정도 늦을 수 있어요. 답할 때 출처가 BBC 뉴스나 football-data.org라고 한 줄로 알려줘.)\n" + extra;
   }
@@ -218,7 +307,7 @@ module.exports = async function (req, res) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: system }] },
         contents: contents,
-        generationConfig: { maxOutputTokens: 1800 }
+        generationConfig: { maxOutputTokens: pf.tokens }
       })
     });
 
