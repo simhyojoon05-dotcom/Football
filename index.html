@@ -4,9 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fotmini - AI 축구 비서</title>
+<script>
+(function(){try{var s=JSON.parse(localStorage.getItem("fotmini_settings_v1")||"{}");var t=s.theme||"light";if(t==="system"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- 아이콘 모음 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.6"/><rect x="5" y="13.5" width="14" height="7" rx="3.5"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M3 6h8M15 6h6M3 12h4M11 12h10M3 18h10M17 18h4"/><circle cx="13" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v6a4 4 0 0 1-8 0z"/><path d="M8 6H5a1 1 0 0 0-1 1c0 2.2 1.8 4 4 4M16 6h3a1 1 0 0 1 1 1c0 2.2-1.8 4-4 4"/><path d="M12 14v4M8 21h8M9.5 18h5"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.6-1.8-.3-1 .3-2 1.4-2H17a4 4 0 0 0 4-4c0-5-4-10.2-9-10.2z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.8"/><path d="M4.5 5.5v6.5c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V5.5M4.5 12v6.5c0 1.5 3.4 2.8 7.5 2.8s7.5-1.3 7.5-2.8V12"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M18 12H9"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></symbol>
+  <symbol id="i-bug" viewBox="0 0 24 24"><path d="M9 9h6v6a3 3 0 0 1-6 0z"/><path d="M12 9V6M9 4l1.5 2M15 4l-1.5 2M5 11h4M15 11h4M5 17h4M15 17h4"/></symbol>
+</svg>
 
 <header class="topbar">
   <button id="menuBtn" class="round" type="button" aria-label="메뉴">
@@ -71,35 +93,306 @@
     </button>
   </div>
 
-  <button type="button" id="drawerSettings" class="menu-row">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    <span>설정</span>
-    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-  </button>
-
-  <button type="button" id="drawerNew" class="menu-row">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M21.5 2.5L2.5 10l7.5 3 3 7.5z"/><path d="M10 13L21.5 2.5"/></svg>
-    <span>새 채팅</span>
-    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-  </button>
-
-  <!-- 시안에는 없지만 선수 도감으로 가는 길이라 넣었어요. 필요 없으면 이 버튼 전체를 지우세요 -->
-  <button type="button" id="drawerDex" class="menu-row">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
-    <span>선수 도감</span>
-    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-  </button>
-
-  <div class="drawer-line"></div>
-
-  <div class="hist-head">
-    <span>채팅 기록</span>
-    <button id="histClear" class="hist-clear" type="button" aria-label="채팅 기록 모두 지우기">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2"/></svg>
+  <!-- 기본 메뉴 -->
+  <div id="viewMain" class="dview">
+    <button type="button" id="drawerSettings" class="menu-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>설정</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
     </button>
+
+    <button type="button" id="drawerNew" class="menu-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M21.5 2.5L2.5 10l7.5 3 3 7.5z"/><path d="M10 13L21.5 2.5"/></svg>
+      <span>새 채팅</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+
+    <!-- 시안에는 없지만 선수 도감으로 가는 길이라 넣었어요. 필요 없으면 이 버튼 전체를 지우세요 -->
+    <button type="button" id="drawerDex" class="menu-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+      <span>선수 도감</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+
+    <div class="drawer-line"></div>
+
+    <div class="hist-head">
+      <span>채팅 기록</span>
+      <button id="histClear" class="hist-clear" type="button" aria-label="채팅 기록 모두 지우기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2"/></svg>
+      </button>
+    </div>
+    <div id="histList" class="hist-list"></div>
   </div>
-  <div id="histList" class="hist-list"></div>
+
+  <!-- 설정 메뉴 -->
+  <div id="viewSettings" class="dview" hidden>
+    <div class="set-head">
+      <button id="setBack" class="round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <span>설정</span>
+    </div>
+
+    <div class="set-list">
+      <button type="button" class="set-item" data-sec="account">
+        <svg class="ic"><use href="#i-user"/></svg>
+        <span class="set-txt"><b>계정 설정</b><small>프로필, 닉네임, 계정 관리</small></span>
+        <svg class="ic chev"><use href="#i-chev"/></svg>
+      </button>
+      <button type="button" class="set-item" data-sec="ai">
+        <svg class="ic"><use href="#i-sliders"/></svg>
+        <span class="set-txt"><b>AI 응답 설정</b><small>답변 길이, 말투, 전술 분석 상세도</small></span>
+        <svg class="ic chev"><use href="#i-chev"/></svg>
+      </button>
+      <button type="button" class="set-item" data-sec="interest">
+        <svg class="ic"><use href="#i-trophy"/></svg>
+        <span class="set-txt"><b>축구 관심 설정</b><small>응원팀, 선호 리그, 관심 선수</small></span>
+        <svg class="ic chev"><use href="#i-chev"/></svg>
+      </button>
+      <button type="button" class="set-item" data-sec="display">
+        <svg class="ic"><use href="#i-palette"/></svg>
+        <span class="set-txt"><b>화면 설정</b><small>라이트·다크 모드, 글자 크기, 언어</small></span>
+        <svg class="ic chev"><use href="#i-chev"/></svg>
+      </button>
+      <button type="button" class="set-item" data-sec="data">
+        <svg class="ic"><use href="#i-db"/></svg>
+        <span class="set-txt"><b>데이터 및 기록</b><small>채팅 기록 관리, 데이터 삭제</small></span>
+        <svg class="ic chev"><use href="#i-chev"/></svg>
+      </button>
+      <button type="button" class="set-item" data-sec="about">
+        <svg class="ic"><use href="#i-info"/></svg>
+        <span class="set-txt"><b>Fotmini 정보</b><small>서비스 소개, 버전 정보, 문의</small></span>
+        <svg class="ic chev"><use href="#i-chev"/></svg>
+      </button>
+    </div>
+
+    <button id="setReset" class="reset-btn" type="button"><svg class="ic"><use href="#i-refresh"/></svg><span>설정 초기화</span></button>
+  </div>
 </aside>
+
+<!-- 설정 세부 화면 -->
+<section id="setPage" class="setpage" hidden>
+
+  <!-- 계정 설정 -->
+  <div class="sec" id="sec-account" hidden>
+    <div class="sec-head">
+      <button class="sec-back round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <h2>계정 설정</h2>
+    </div>
+    <p class="sec-desc">프로필, 닉네임, 계정 정보를 관리할 수 있습니다.</p>
+
+    <div class="card pad">
+      <h3 class="card-title">프로필 정보</h3>
+      <div class="profile">
+        <div class="avatar">
+          <svg class="ic"><use href="#i-user"/></svg>
+          <button class="cam soon" type="button" aria-label="사진 변경"><svg class="ic"><use href="#i-camera"/></svg></button>
+        </div>
+        <div class="profile-fields">
+          <label class="lbl" for="nickInput">닉네임</label>
+          <div class="field">
+            <input id="nickInput" type="text" maxlength="12" autocomplete="off">
+            <svg class="ic"><use href="#i-pencil"/></svg>
+          </div>
+          <p class="lbl mt">계정 유형</p>
+          <p class="val">일반 사용자</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <h3 class="card-title">계정 관리</h3>
+      <div class="row">
+        <svg class="ic row-ic"><use href="#i-mail"/></svg>
+        <div class="grow"><b>이메일 주소</b><small>로그인 후 확인할 수 있어요</small></div>
+        <button class="btn-pill soon" type="button">변경하기 <svg class="ic sm"><use href="#i-chev"/></svg></button>
+      </div>
+      <div class="row">
+        <svg class="ic row-ic"><use href="#i-lock"/></svg>
+        <div class="grow"><b>비밀번호 변경</b><small>보안을 위해 정기적으로 변경하세요.</small></div>
+        <button class="btn-pill soon" type="button">변경하기 <svg class="ic sm"><use href="#i-chev"/></svg></button>
+      </div>
+      <div class="row">
+        <svg class="ic row-ic"><use href="#i-logout"/></svg>
+        <div class="grow"><b>로그아웃</b><small>현재 계정에서 로그아웃합니다.</small></div>
+        <button class="btn-pill soon" type="button">로그아웃 <svg class="ic sm"><use href="#i-chev"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 응답 설정 -->
+  <div class="sec" id="sec-ai" hidden>
+    <div class="sec-head">
+      <button class="sec-back round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <h2>AI 응답 설정</h2>
+    </div>
+    <p class="sec-desc">Fotmini의 답변 방식을 원하는 대로 설정해보세요.</p>
+
+    <h3>답변 길이</h3>
+    <div class="seg">
+      <button type="button" class="opt" data-set="len" data-val="short">간단하게</button>
+      <button type="button" class="opt" data-set="len" data-val="normal">보통</button>
+      <button type="button" class="opt" data-set="len" data-val="long">자세하게</button>
+    </div>
+
+    <h3>설명 수준</h3>
+    <div class="seg">
+      <button type="button" class="opt" data-set="level" data-val="general">일반적인 설명</button>
+      <button type="button" class="opt" data-set="level" data-val="detailed">상세한 설명</button>
+      <button type="button" class="opt" data-set="level" data-val="expert">전문적인 분석</button>
+    </div>
+
+    <h3>말투 설정</h3>
+    <div class="seg">
+      <button type="button" class="opt" data-set="tone" data-val="polite">정중하게</button>
+      <button type="button" class="opt" data-set="tone" data-val="friendly">친근하게</button>
+      <button type="button" class="opt" data-set="tone" data-val="concise">간결하게</button>
+    </div>
+
+    <h3>전술 분석 상세도 <span class="help" title="전술 분석 질문에서 얼마나 깊이 설명할지 정해요">?</span></h3>
+    <div class="slider-row">
+      <input id="tacticRange" type="range" min="0" max="100" step="1" aria-label="전술 분석 상세도">
+      <span id="tacticLabel" class="slider-label">상세함</span>
+    </div>
+
+    <div class="info">
+      <svg class="ic"><use href="#i-info"/></svg>
+      <p>전술 분석 상세도를 높이면<br>더 깊이 있는 분석을 받아볼 수 있습니다.</p>
+    </div>
+  </div>
+
+  <!-- 축구 관심 설정 -->
+  <div class="sec" id="sec-interest" hidden>
+    <div class="sec-head">
+      <button class="sec-back round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <h2>축구 관심 설정</h2>
+    </div>
+    <p class="sec-desc">당신의 축구 관심사를 설정하여,<br>더 맞춤화된 답변을 받아보세요.</p>
+
+    <h3>응원팀</h3>
+    <select id="teamSelect" aria-label="응원팀"></select>
+
+    <h3>관심 리그</h3>
+    <div id="leagueChips" class="tags"></div>
+    <div id="leagueAdd" class="tags addlist" hidden></div>
+
+    <h3>관심 선수</h3>
+    <div class="add-row">
+      <input id="playerInput" type="text" maxlength="20" placeholder="선수 이름을 입력하세요..." autocomplete="off">
+      <button id="playerAddBtn" class="btn-soft" type="button">+ 추가</button>
+    </div>
+    <div id="playerChips" class="tags mt-s"></div>
+
+    <h3>주요 대회</h3>
+    <label class="check"><input type="checkbox" data-comp="ucl"><span>UEFA 챔피언스리그</span></label>
+    <label class="check"><input type="checkbox" data-comp="pl"><span>프리미어리그</span></label>
+    <label class="check"><input type="checkbox" data-comp="wc"><span>FIFA 월드컵</span></label>
+
+    <div class="save-row"><button id="saveInterest" class="btn-blue" type="button">저장하기</button></div>
+  </div>
+
+  <!-- 화면 설정 -->
+  <div class="sec" id="sec-display" hidden>
+    <div class="sec-head">
+      <button class="sec-back round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <h2>화면 설정</h2>
+    </div>
+    <p class="sec-desc">Fotmini의 화면을 취향에 맞게 설정해보세요.</p>
+
+    <h3>테마 모드</h3>
+    <div class="theme-row">
+      <button type="button" class="theme-card" data-set="theme" data-val="light">
+        <div class="thumb t-light"></div><span class="radio-lbl"><i class="dot"></i>라이트 모드</span>
+      </button>
+      <button type="button" class="theme-card" data-set="theme" data-val="dark">
+        <div class="thumb t-dark"></div><span class="radio-lbl"><i class="dot"></i>다크 모드</span>
+      </button>
+      <button type="button" class="theme-card" data-set="theme" data-val="system">
+        <div class="thumb t-system"></div><span class="radio-lbl"><i class="dot"></i>시스템 설정</span>
+      </button>
+    </div>
+
+    <h3>글자 크기</h3>
+    <div class="seg">
+      <button type="button" class="opt" data-set="fontSize" data-val="small">작게</button>
+      <button type="button" class="opt" data-set="fontSize" data-val="normal">보통</button>
+      <button type="button" class="opt" data-set="fontSize" data-val="large">크게</button>
+    </div>
+
+    <h3>언어 설정</h3>
+    <select id="langSelect" aria-label="언어 설정"><option value="ko">한국어</option></select>
+
+    <h3>표시 방식</h3>
+    <div class="card one">
+      <div class="row">
+        <div class="grow"><b>채팅 시간 표시</b><small>메시지 옆에 시간도 함께 표시합니다.</small></div>
+        <button type="button" class="switch" role="switch" data-toggle="showTime" aria-label="채팅 시간 표시"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 데이터 및 기록 -->
+  <div class="sec" id="sec-data" hidden>
+    <div class="sec-head">
+      <button class="sec-back round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <h2>데이터 및 기록</h2>
+    </div>
+    <p class="sec-desc">채팅 기록과 데이터를 관리할 수 있습니다.</p>
+
+    <div class="card one">
+      <div class="row">
+        <div class="grow"><b>채팅 기록 관리</b><small>저장된 채팅 기록을 확인하고 삭제할 수 있습니다.</small></div>
+        <button id="viewHistBtn" class="btn-pill" type="button">기록 보기 <svg class="ic sm"><use href="#i-chev"/></svg></button>
+      </div>
+    </div>
+    <div class="card one">
+      <div class="row">
+        <div class="grow"><b>대화 저장 설정</b><small>채팅 기록을 자동으로 저장할지 설정하세요.</small></div>
+        <button type="button" class="switch" role="switch" data-toggle="saveHistory" aria-label="대화 저장"></button>
+      </div>
+    </div>
+    <div class="card one">
+      <div class="row">
+        <div class="grow"><b>데이터 삭제</b><small>모든 채팅 기록과 설정을 삭제합니다.</small></div>
+        <button id="wipeBtn" class="btn-danger" type="button">데이터 삭제</button>
+      </div>
+    </div>
+
+    <div class="info">
+      <svg class="ic"><use href="#i-info"/></svg>
+      <p>데이터 삭제 시 복구할 수 없습니다.<br>신중하게 진행해주세요.</p>
+    </div>
+  </div>
+
+  <!-- Fotmini 정보 -->
+  <div class="sec" id="sec-about" hidden>
+    <div class="sec-head">
+      <button class="sec-back round tiny" type="button" aria-label="뒤로"><svg class="ic"><use href="#i-back"/></svg></button>
+      <h2>Fotmini 정보</h2>
+    </div>
+
+    <div class="about">
+      <svg class="ball-big" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" fill="#fff" stroke="#16171b" stroke-width="3"/>
+        <path d="M32 19l11 8-4.2 13H25.2L21 27z" fill="#16171b"/>
+        <path d="M32 19V5M43 27l13-4M38.800 40l8 11M25.200 40l-8 11M21 27L8 23" fill="none" stroke="#16171b" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="about-name">Fotmini</div>
+      <p class="about-sub">축구를 더 깊이, 더 스마트하게</p>
+    </div>
+
+    <div class="card pad">
+      <div class="kv"><span>버전 정보</span><span>v1.0.0</span></div>
+      <div class="kv"><span>개발사</span><span>Fotmini Team</span></div>
+      <div class="kv"><span>출시일</span><span>2026년 10월 10일</span></div>
+      <p class="about-note">Fotmini는 축구를 사랑하는 모든 분들을 위한<br>AI 축구 비서입니다.</p>
+    </div>
+
+    <div class="two">
+      <button class="btn-big soon" type="button"><svg class="ic"><use href="#i-mail"/></svg>문의하기</button>
+      <button class="btn-big soon" type="button"><svg class="ic"><use href="#i-bug"/></svg>오류 신고</button>
+    </div>
+  </div>
+</section>
 
 <section id="dex" class="dex" hidden>
   <div class="dex-head">
@@ -121,6 +414,8 @@
     <div id="cardGrid"></div>
   </div>
 </section>
+
+<div id="toast" class="toast" role="status"></div>
 
 <script src="script.js"></script>
 </body>
